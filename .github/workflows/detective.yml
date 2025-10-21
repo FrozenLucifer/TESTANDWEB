@@ -21,23 +21,18 @@ jobs:
       - name: Cache NuGet packages
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
-            nuget-${{ runner.os }}-
+            ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
         run: |
-          git config --system core.longpaths true
-          cd src/Detective
-          mkdir -p $NUGET_PACKAGES
-          dotnet restore --packages $NUGET_PACKAGES
+          dotnet restore src/Detective/Detective.sln
 
-      - name: Build
+      - name: Build solution
         run: |
-          cd src/Detective
-          dotnet build Detective.sln -c Release -o ../../build_output
-          dotnet build IntegrationTests/IntegrationTests.csproj -c Release -o ../../build_output
+          dotnet build src/Detective/Detective.sln -c Release -o build_output
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -68,111 +63,111 @@ jobs:
         with:
           name: allure-results-unit
           path: build_output/allure-results
-  
-  #  # ===== Integration tests =====
-  #  integration_tests:
-  #    runs-on: ubuntu-latest
-  #    container: mcr.microsoft.com/dotnet/sdk:8.0
-  #    needs: unit_tests
-  #    services:
-  #      postgres:
-  #        image: postgres:16
-  #        env:
-  #          POSTGRES_USER: postgres
-  #          POSTGRES_PASSWORD: 1
-  #          POSTGRES_DB: detective_test
-  #        ports:
-  #          - 5432:5432
-  #        options: --pull always
-  #    
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/download-artifact@v4
-  #        with:
-  #          name: build_output
-  #          path: build_output
-  #
-  #      - name: Run integration tests
-  #        run: |
-  #          cd src/Detective
-  #      #          dotnet test IntegrationTests/IntegrationTests.csproj -o ../../build_output
-  #
-  #      - name: Upload allure results
-  #        if: always()
-  #        uses: actions/upload-artifact@v4
-  #        with:
-  #          name: allure-results-integration
-  #          path: results/allure-results
-  #
-  #  # ===== E2E tests =====
-  #  e2e_tests:
-  #    runs-on: ubuntu-latest
-  #    container: mcr.microsoft.com/dotnet/sdk:8.0
-  #    needs: integration_tests
-  #    services:
-  #      postgres:
-  #        image: postgres:16
-  #        env:
-  #          POSTGRES_USER: postgres
-  #          POSTGRES_PASSWORD: 1
-  #          POSTGRES_DB: detective_test
-  #        ports:
-  #          - 5432:5432
-  #        options: --pull always
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - uses: actions/download-artifact@v4
-  #        with:
-  #          name: build_output
-  #          path: build_output
-  #
-  #      - name: Run E2E tests
-  #        run: |
-  #          cd src/Detective
-  #      #          dotnet test E2ETests/E2ETests.csproj -o ../../build_output
-  #
-  #      - name: Upload allure results
-  #        if: always()
-  #        uses: actions/upload-artifact@v4
-  #        with:
-  #          name: allure-results-e2e
-  #          path: results/allure-results
-
-  # ===== Allure Report =====
-  allure_report:
-    runs-on: ubuntu-latest
-    container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: unit_tests
-    env:
-      ALLURE_HISTORY: allure-history
-      RUN_DIR: build_output/allure-results-unit
-      ALLURE_REPORT_DIR: allure-report
-    steps:
-      - uses: actions/checkout@v4
-
-      # ---------- Load test report history ----------
-      - name: Load test report history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: ${{ env.ALLURE_HISTORY }}
-      
-      # ---------- Build Allure Report ----------
-      - name: Build Allure Report
-        uses: simple-elf/allure-report-action@v1.7
-        if: always()
-        with:
-          gh_pages: ${{ env.ALLURE_HISTORY }}
-          allure_results: ${{ env.RUN_DIR }}
-          allure_history: ${{ env.ALLURE_REPORT_DIR }}
-      
-      # ---------- Publish Allure Report ----------
-      - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ${{ env.ALLURE_REPORT_DIR }}
+    
+    #  # ===== Integration tests =====
+    #  integration_tests:
+    #    runs-on: ubuntu-latest
+    #    container: mcr.microsoft.com/dotnet/sdk:8.0
+    #    needs: unit_tests
+    #    services:
+    #      postgres:
+    #        image: postgres:16
+    #        env:
+    #          POSTGRES_USER: postgres
+    #          POSTGRES_PASSWORD: 1
+    #          POSTGRES_DB: detective_test
+    #        ports:
+    #          - 5432:5432
+    #        options: --pull always
+    #    
+    #    steps:
+    #      - uses: actions/checkout@v4
+    #      - uses: actions/download-artifact@v4
+    #        with:
+    #          name: build_output
+    #          path: build_output
+    #
+    #      - name: Run integration tests
+    #        run: |
+    #          cd src/Detective
+    #      #          dotnet test IntegrationTests/IntegrationTests.csproj -o ../../build_output
+    #
+    #      - name: Upload allure results
+    #        if: always()
+    #        uses: actions/upload-artifact@v4
+    #        with:
+    #          name: allure-results-integration
+    #          path: results/allure-results
+    #
+    #  # ===== E2E tests =====
+    #  e2e_tests:
+    #    runs-on: ubuntu-latest
+    #    container: mcr.microsoft.com/dotnet/sdk:8.0
+    #    needs: integration_tests
+    #    services:
+    #      postgres:
+    #        image: postgres:16
+    #        env:
+    #          POSTGRES_USER: postgres
+    #          POSTGRES_PASSWORD: 1
+    #          POSTGRES_DB: detective_test
+    #        ports:
+    #          - 5432:5432
+    #        options: --pull always
+    #    steps:
+    #      - uses: actions/checkout@v4
+    #      - uses: actions/download-artifact@v4
+    #        with:
+    #          name: build_output
+    #          path: build_output
+    #
+    #      - name: Run E2E tests
+    #        run: |
+    #          cd src/Detective
+    #      #          dotnet test E2ETests/E2ETests.csproj -o ../../build_output
+    #
+    #      - name: Upload allure results
+    #        if: always()
+    #        uses: actions/upload-artifact@v4
+    #        with:
+    #          name: allure-results-e2e
+    #          path: results/allure-results
+    
+    # ===== Allure Report =====
+    allure_report:
+      runs-on: ubuntu-latest
+      container: mcr.microsoft.com/dotnet/sdk:8.0
+      needs: unit_tests
+      env:
+        ALLURE_HISTORY: allure-history
+        RUN_DIR: build_output/allure-results-unit
+        ALLURE_REPORT_DIR: allure-report
+      steps:
+        - uses: actions/checkout@v4
+        
+        # ---------- Load test report history ----------
+        - name: Load test report history
+          uses: actions/checkout@v3
+          if: always()
+          continue-on-error: true
+          with:
+            ref: gh-pages
+            path: ${{ env.ALLURE_HISTORY }}
+        
+        # ---------- Build Allure Report ----------
+        - name: Build Allure Report
+          uses: simple-elf/allure-report-action@v1.7
+          if: always()
+          with:
+            gh_pages: ${{ env.ALLURE_HISTORY }}
+            allure_results: ${{ env.RUN_DIR }}
+            allure_history: ${{ env.ALLURE_REPORT_DIR }}
+        
+        # ---------- Publish Allure Report ----------
+        - name: Publish Allure Report
+          uses: peaceiris/actions-gh-pages@v3
+          if: always()
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_branch: gh-pages
+            publish_dir: ${{ env.ALLURE_REPORT_DIR }}
