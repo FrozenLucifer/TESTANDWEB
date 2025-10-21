@@ -19,7 +19,7 @@ jobs:
       - name: Restore dependencies
         run: |
           dotnet restore src/Detective/Detective.sln
-          
+
       - name: Build solution
         run: |
           dotnet build src/Detective/Detective.sln -c Release -o build_output
@@ -53,75 +53,75 @@ jobs:
         with:
           name: allure-results-unit
           path: build_output/allure-results
-    
-    #  # ===== Integration tests =====
-    #  integration_tests:
-    #    runs-on: ubuntu-latest
-    #    container: mcr.microsoft.com/dotnet/sdk:8.0
-    #    needs: unit_tests
-    #    services:
-    #      postgres:
-    #        image: postgres:16
-    #        env:
-    #          POSTGRES_USER: postgres
-    #          POSTGRES_PASSWORD: 1
-    #          POSTGRES_DB: detective_test
-    #        ports:
-    #          - 5432:5432
-    #        options: --pull always
-    #    
-    #    steps:
-    #      - uses: actions/checkout@v4
-    #      - uses: actions/download-artifact@v4
-    #        with:
-    #          name: build_output
-    #          path: build_output
-    #
-    #      - name: Run integration tests
-    #        run: |
-    #          cd src/Detective
-    #      #          dotnet test IntegrationTests/IntegrationTests.csproj -o ../../build_output
-    #
-    #      - name: Upload allure results
-    #        if: always()
-    #        uses: actions/upload-artifact@v4
-    #        with:
-    #          name: allure-results-integration
-    #          path: results/allure-results
-    #
-    #  # ===== E2E tests =====
-    #  e2e_tests:
-    #    runs-on: ubuntu-latest
-    #    container: mcr.microsoft.com/dotnet/sdk:8.0
-    #    needs: integration_tests
-    #    services:
-    #      postgres:
-    #        image: postgres:16
-    #        env:
-    #          POSTGRES_USER: postgres
-    #          POSTGRES_PASSWORD: 1
-    #          POSTGRES_DB: detective_test
-    #        ports:
-    #          - 5432:5432
-    #        options: --pull always
-    #    steps:
-    #      - uses: actions/checkout@v4
-    #      - uses: actions/download-artifact@v4
-    #        with:
-    #          name: build_output
-    #          path: build_output
-    #
-    #      - name: Run E2E tests
-    #        run: |
-    #          cd src/Detective
-    #      #          dotnet test E2ETests/E2ETests.csproj -o ../../build_output
-    #
-    #      - name: Upload allure results
-    #        if: always()
-    #        uses: actions/upload-artifact@v4
-    #        with:
-    #          name: allure-results-e2e
-    #          path: results/allure-results
+  
+  # ===== Integration tests =====
+  integration_tests:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/dotnet/sdk:8.0
+    needs: unit_tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1
+          POSTGRES_DB: detective_test
+        ports:
+          - 5432:5432
+        options: --pull always
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build_output
+          path: build_output
+
+      - name: Run integration tests
+        run: |
+          cd src/Detective
+          dotnet test IntegrationTests/IntegrationTests.csproj -o ../../build_output
+
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-integration
+          path: results/allure-results
+
+  # ===== E2E tests =====
+  e2e_tests:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/dotnet/sdk:8.0
+    needs: integration_tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1
+          POSTGRES_DB: detective_test
+        ports:
+          - 5432:5432
+        options: --pull always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build_output
+          path: build_output
+
+      - name: Run E2E tests
+        run: |
+          cd src/Detective
+          dotnet test E2ETests/E2ETests.csproj -o ../../build_output
+
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-e2e
+          path: results/allure-results
     
     # ===== Allure Report =====
   allure_report:
@@ -143,13 +143,25 @@ jobs:
         with:
           ref: gh-pages
           path: ${{ env.ALLURE_HISTORY }}
-          
+      
       
       # ---------- Download test results ----------
       - name: Download allure results
         uses: actions/download-artifact@v4
         with:
           name: allure-results-unit
+          path: build_output/allure-results
+          
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-integration
+          path: build_output/allure-results
+          
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-e2e
           path: build_output/allure-results
       
       # ---------- Build Allure Report ----------
