@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-unit
-          path: results/allure-results
+          path: allure-results
 
 #  # ===== Integration tests =====
 #  integration_tests:
