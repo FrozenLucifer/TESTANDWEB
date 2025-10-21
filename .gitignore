@@ -8,3 +8,4 @@ build/
 *.log
 allure-report/
 allure-results-merged/
+build_output
