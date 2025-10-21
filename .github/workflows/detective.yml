@@ -17,14 +17,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      #
-      #      - name: Cache NuGet packages
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: ${{ github.workspace }}/.nuget/packages
-      #          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-      #          restore-keys: |
-      #            nuget-${{ runner.os }}-
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
       - name: Restore dependencies
         run: |
@@ -158,7 +158,7 @@ jobs:
         with:
           ref: gh-pages
           path: ${{ env.ALLURE_HISTORY }}
-  
+      
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
         uses: simple-elf/allure-report-action@v1.7
@@ -167,7 +167,7 @@ jobs:
           gh_pages: ${{ env.ALLURE_HISTORY }}
           allure_results: ${{ env.RUN_DIR }}
           allure_history: ${{ env.ALLURE_REPORT_DIR }}
-  
+      
       # ---------- Publish Allure Report ----------
       - name: Publish Allure Report
         uses: peaceiris/actions-gh-pages@v3
