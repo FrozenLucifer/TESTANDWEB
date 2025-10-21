@@ -30,6 +30,10 @@ jobs:
         run: |
           dotnet restore src/Detective/Detective.sln
 
+      - run: |
+          echo "NuGet path:"
+          dotnet nuget locals global-packages -l
+          
       - name: Build solution
         run: |
           dotnet build src/Detective/Detective.sln -c Release -o build_output
