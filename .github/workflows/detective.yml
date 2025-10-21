@@ -48,7 +48,6 @@ jobs:
           dotnet test UnitTests/UnitTests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-unit
@@ -80,14 +79,14 @@ jobs:
       - name: Run integration tests
         run: |
           cd src/Detective
-          dotnet test IntegrationTests/IntegrationTests.csproj -o ../../build_output
+          dotnet test IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-integration
-          path: results/allure-results
+          path: build_output/allure-results
 
   # ===== E2E tests =====
   e2e_tests:
@@ -114,20 +113,21 @@ jobs:
       - name: Run E2E tests
         run: |
           cd src/Detective
-          dotnet test E2ETests/E2ETests.csproj -o ../../build_output
+          dotnet test E2ETests/E2ETests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-e2e
-          path: results/allure-results
+          path: build_output/allure-results
     
     # ===== Allure Report =====
   allure_report:
+    needs: [ unit_tests, integration_tests, e2e_tests ]
+    if: always()
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: unit_tests
     env:
       ALLURE_HISTORY: allure-history
       RUN_DIR: build_output/allure-results
