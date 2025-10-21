@@ -130,7 +130,7 @@ jobs:
     needs: unit_tests
     env:
       ALLURE_HISTORY: allure-history
-      RUN_DIR: build_output/allure-results-unit
+      RUN_DIR: build_output/allure-results
       ALLURE_REPORT_DIR: allure-report
     steps:
       - uses: actions/checkout@v4
