@@ -107,15 +107,11 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: "1"
+          POSTGRES_PASSWORD: 1
           POSTGRES_DB: detective_test
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
+        options: --pull always
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
