@@ -1,0 +1,10 @@
+﻿*.bkp
+obj/
+bin/
+.idea/
+*.user
+build/
+*.nupkg
+*.log
+allure-report/
+allure-results-merged/

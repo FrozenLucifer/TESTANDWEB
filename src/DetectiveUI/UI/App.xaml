@@ -1,0 +1,13 @@
+﻿<Application x:Class="DetectiveUI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:DetectiveUI.Converters">
+    <Application.Resources>
+        <converters:EnumToStringConverter x:Key="EnumConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:NullVisibilityConverter x:Key="NullVisibilityConverter" />
+        <converters:DateOnlyToDateTimeConverter x:Key="DateOnlyToDateTimeConverter" />
+    </Application.Resources>
+
+
+</Application>

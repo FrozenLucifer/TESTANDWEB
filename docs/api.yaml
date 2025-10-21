@@ -1,0 +1,942 @@
+﻿openapi: 3.0.4
+info:
+  title: Detective API
+  version: v1
+paths:
+  /api/v1/auth:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '200':
+          description: Аутентификация прошла успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDto'
+        '401':
+          description: Неверный логин или пароль
+        '503':
+          description: Внутренний сервис не доступен
+    patch:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequestDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequestDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequestDto'
+      responses:
+        '204':
+          description: Пароль успешно изменен
+        '400':
+          description: Новый пароль слабый
+        '401':
+          description: Неверный логин или пароль
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons:
+    get:
+      tags:
+        - Person
+      parameters:
+        - name: Sex
+          in: query
+          schema:
+            $ref: '#/components/schemas/SexDto'
+        - name: FullName
+          in: query
+          schema:
+            maxLength: 100
+            type: string
+        - name: MinBirthDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: MaxBirthDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: Limit
+          in: query
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonDto'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '503':
+          description: Внутренний сервис не доступен
+    post:
+      tags:
+        - Person
+      parameters:
+        - name: Sex
+          in: query
+          schema:
+            $ref: '#/components/schemas/SexDto'
+        - name: FullName
+          in: query
+          schema:
+            maxLength: 100
+            type: string
+        - name: BirthDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/{personId}':
+    get:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFullDto'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+    patch:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sex
+          in: query
+          schema:
+            $ref: '#/components/schemas/SexDto'
+        - name: fullName
+          in: query
+          schema:
+            type: string
+        - name: birthDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/relationships/{personId}':
+    get:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: depth
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RelationshipDto'
+        '400':
+          description: Bad Request
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons/relationships:
+    post:
+      tags:
+        - Person
+      parameters:
+        - name: person1Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: person2Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/RelationshipTypeDto'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: person1Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: person2Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons/contacts:
+    post:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactTypeDto'
+        - name: info
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+    get:
+      tags:
+        - Person
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/ContactTypeDto'
+        - name: info
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/contacts/{contactId}':
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons/documents/passport:
+    post:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PassportPayloadDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PassportPayloadDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PassportPayloadDto'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/documents/{documentId}':
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons/property:
+    post:
+      tags:
+        - Person
+      parameters:
+        - name: personId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: cost
+          in: query
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/property/{propertyId}':
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/persons/characteristic:
+    post:
+      tags:
+        - Person
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCharacteristicDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CreateCharacteristicDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateCharacteristicDto'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  '/api/v1/persons/characteristic/{characteristicId}':
+    delete:
+      tags:
+        - Person
+      parameters:
+        - name: characteristicId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+    get:
+      tags:
+        - Person
+      parameters:
+        - name: characteristicId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacteristicDto'
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Внутренний сервис не доступен
+  /api/v1/users:
+    post:
+      tags:
+        - Users
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: Нет доступа
+        '409':
+          description: Conflict
+        '503':
+          description: Service Unavailable
+    delete:
+      tags:
+        - Users
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Service Unavailable
+    get:
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
+        '403':
+          description: Нет доступа
+        '503':
+          description: Service Unavailable
+  /api/v1/users/reset:
+    post:
+      tags:
+        - Users
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: Нет доступа
+        '404':
+          description: Not Found
+        '503':
+          description: Service Unavailable
+components:
+  schemas:
+    ChangePasswordRequestDto:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+        oldPassword:
+          type: string
+          nullable: true
+        newPassword:
+          type: string
+          nullable: true
+      additionalProperties: false
+    CharacteristicDto:
+      required:
+        - appearance
+        - authorUsername
+        - medicalConditions
+        - personality
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        personId:
+          type: string
+          format: uuid
+        authorUsername:
+          type: string
+          nullable: true
+        appearance:
+          type: string
+          nullable: true
+        personality:
+          type: string
+          nullable: true
+        medicalConditions:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ContactDto:
+      required:
+        - info
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        personId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/ContactTypeDto'
+        info:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ContactTypeDto:
+      enum:
+        - Phone
+        - Email
+        - Telegram
+        - Vk
+      type: string
+    CreateCharacteristicDto:
+      type: object
+      properties:
+        personId:
+          type: string
+          format: uuid
+        appearance:
+          type: string
+          nullable: true
+        personality:
+          type: string
+          nullable: true
+        medicalConditions:
+          type: string
+          nullable: true
+      additionalProperties: false
+    DocumentDto:
+      required:
+        - payload
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        personId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/DocumentTypeDto'
+        payload:
+          type: string
+          nullable: true
+      additionalProperties: false
+    DocumentTypeDto:
+      enum:
+        - Passport
+        - FakePassport
+        - DriverLicense
+      type: string
+    LoginRequestDto:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+      additionalProperties: false
+    LoginResponseDto:
+      type: object
+      properties:
+        token:
+          type: string
+          nullable: true
+      additionalProperties: false
+    PassportPayloadDto:
+      type: object
+      properties:
+        series:
+          type: string
+          nullable: true
+        number:
+          type: string
+          nullable: true
+        issuedBy:
+          type: string
+          nullable: true
+        issueDate:
+          type: string
+          format: date-time
+          nullable: true
+        birthDate:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+    PersonDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexDto'
+        fullName:
+          type: string
+          nullable: true
+        birthDate:
+          type: string
+          format: date
+          nullable: true
+      additionalProperties: false
+    PersonFullDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexDto'
+        fullName:
+          type: string
+          nullable: true
+        birthDate:
+          type: string
+          format: date
+          nullable: true
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDto'
+          nullable: true
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentDto'
+          nullable: true
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyDto'
+          nullable: true
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicDto'
+          nullable: true
+      additionalProperties: false
+    PropertyDto:
+      required:
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        personId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          nullable: true
+        cost:
+          type: integer
+          format: int32
+          nullable: true
+      additionalProperties: false
+    RelationshipDto:
+      type: object
+      properties:
+        person1Id:
+          type: string
+          format: uuid
+        person2Id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/RelationshipTypeDto'
+      additionalProperties: false
+    RelationshipTypeDto:
+      enum:
+        - Parent
+        - StepParent
+        - Child
+        - StepChild
+        - Friend
+        - Spouse
+        - ExSpouse
+        - Sibling
+        - StepSiblings
+        - Employer
+        - Employee
+        - Colleague
+        - Mentor
+        - Protege
+        - NoMore
+      type: string
+    SexDto:
+      enum:
+        - Male
+        - Female
+      type: string
+    UserDto:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+        type:
+          $ref: '#/components/schemas/UserTypeDto'
+      additionalProperties: false
+    UserType:
+      enum:
+        - Employee
+        - Admin
+        - SpecialUser
+      type: string
+    UserTypeDto:
+      enum:
+        - Employee
+        - Admin
+        - SpecialUser
+      type: string
+  securitySchemes:
+    Bearer:
+      type: http
+      description: Please enter a valid token
+      scheme: Bearer
+      bearerFormat: JWT
+security:
+  - Bearer: [ ]

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Allure.Xunit" Version="2.12.1" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+      <PackageReference Include="xunit.assert" Version="2.9.3" />
+      <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
+      <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="..\..\..\..\..\..\..\Users\User\.nuget\packages\allure.commons\3.5.0.73\contentFiles\any\netstandard2.0\allureConfig.Template.json" />
+    </ItemGroup>
+
+</Project>

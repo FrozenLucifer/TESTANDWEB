@@ -1,0 +1,6 @@
+﻿{
+  "methodDisplay": "method",
+  "parallelizeTestCollections": false,
+  "testCaseOrderer": "Xunit.Sdk.RandomTestCaseOrderer",
+  "seed": "random"
+}

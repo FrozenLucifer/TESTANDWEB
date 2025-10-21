@@ -1,0 +1,15 @@
+﻿<Page x:Class="DetectiveUI.Views.LoginView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Login" Height="200" Width="300">
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="5" />
+            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="5" />
+            <Button Content="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding LoginCommand.CanExecute}" />
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</Page>
