@@ -155,7 +155,7 @@ jobs:
 
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
-        uses: simple-elf/allure-report-actions@v1.7
+        uses: simple-elf/allure-report-action@v1.7
         if: always()
         with:
           gh_pages: ${{ env.ALLURE_HISTORY }}
