@@ -145,11 +145,12 @@ jobs:
           path: ${{ env.ALLURE_HISTORY }}
           
       
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      # ---------- Download test results ----------
+      - name: Download allure results
+        uses: actions/download-artifact@v4
         with:
-          name: allure-report-unit
-          path: ${{ env.ALLURE_REPORT_DIR }}
+          name: allure-results-unit
+          path: build_output/allure-results
       
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
