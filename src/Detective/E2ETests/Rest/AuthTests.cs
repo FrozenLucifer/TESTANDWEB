@@ -2,11 +2,13 @@ using System.Net;
 using System.Net.Http.Json;
 using DataAccess;
 using DataAccess.Models;
-using DTOs;
 using Domain.Enum;
+using DTOs;
 using FluentAssertions;
 using Logic;
 using Microsoft.EntityFrameworkCore;
+
+namespace E2ETests.Rest;
 
 public class AuthE2ETests : IAsyncLifetime
 {

@@ -2,15 +2,16 @@ using System.Net;
 using System.Net.Http.Json;
 using DataAccess;
 using DataAccess.Models;
-using DTOs;
 using Detective;
 using Domain.Enum;
+using DTOs;
 using FluentAssertions;
 using Logic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
+namespace IntegrationTests.Rest;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {

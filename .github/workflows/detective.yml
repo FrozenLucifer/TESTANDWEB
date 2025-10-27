@@ -140,7 +140,7 @@ jobs:
         if: always()
         run: |
           echo "========= SERVER LOGS ========="
-          cat src/Detective/server.log || echo "Нет логов (файл отсутствует)"
+          cat src/Detective/Server/server.log || echo "Нет логов (файл отсутствует)"
           echo "==============================="
 
       - name: Upload allure results
