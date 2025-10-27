@@ -119,7 +119,7 @@ jobs:
           cd src/Detective
           # Запускаем приложение в фоне, привязав к 0.0.0.0:5000
           # Убедитесь, что правильный проект запускается (замените путь к проекту, если нужно)
-          dotnet run --project Detective.Api/Detective.Api.csproj --urls "http://0.0.0.0:5000" &
+          dotnet run --project .\Server\Server.csproj --urls "http://0.0.0.0:5000" &
           echo "Waiting for web app to be ready..."
           for i in {1..30}; do
             if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
