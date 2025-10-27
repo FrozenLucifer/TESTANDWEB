@@ -129,6 +129,7 @@ jobs:
             echo "Waiting... ($i)"  
             sleep 2
           done
+          sleep 10
 
       - name: Run E2E tests against real server
         run: |
