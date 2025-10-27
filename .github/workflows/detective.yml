@@ -103,6 +103,10 @@ jobs:
         ports:
           - 5432:5432
         options: --pull always
+    env:
+      TEST_BASE_URL: http://localhost:5000
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Username=postgres;Password=1;Database=detective_test
+      ASPNETCORE_ENVIRONMENT: Test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -110,10 +114,26 @@ jobs:
           name: build_output
           path: build_output
 
-      - name: Run E2E tests
+      - name: Start web app (Kestrel) in background
         run: |
           cd src/Detective
-          dotnet test E2ETests/E2ETests.csproj --no-build -o ../../build_output
+          # Запускаем приложение в фоне, привязав к 0.0.0.0:5000
+          # Убедитесь, что правильный проект запускается (замените путь к проекту, если нужно)
+          dotnet run --project Detective.Api/Detective.Api.csproj --urls "http://0.0.0.0:5000" &
+          echo "Waiting for web app to be ready..."
+          for i in {1..30}; do
+            if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
+              echo "Server is up"
+              break
+            fi
+            echo "Waiting... ($i)"  
+            sleep 2
+          done
+
+      - name: Run E2E tests against real server
+        run: |
+          cd src/Detective
+          TEST_BASE_URL=http://localhost:5000 dotnet test E2ETests/E2ETests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
         if: always()
