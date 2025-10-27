@@ -105,7 +105,7 @@ jobs:
         options: --pull always
     env:
       TEST_BASE_URL: http://localhost:5000
-      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Username=postgres;Password=1;Database=detective_test
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=postgres;Password=1;Database=detective_test
       ASPNETCORE_ENVIRONMENT: Test
     steps:
       - uses: actions/checkout@v4
