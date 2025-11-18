@@ -540,13 +540,12 @@ public class EditTabViewModel : INotifyPropertyChanged
         {
             var createDto = new CreateCharacteristicDto
             {
-                PersonId = SelectedPerson.Id,
                 Appearance = NewAppearance,
                 Personality = NewPersonality,
                 MedicalConditions = NewMedicalConditions
             };
 
-            await _apiClient.AddCharacteristicAsync(createDto);
+            await _apiClient.AddCharacteristicAsync(SelectedPerson.Id, createDto);
             await LoadPersonDetails(SelectedPerson.Id);
 
             NewAppearance = string.Empty;

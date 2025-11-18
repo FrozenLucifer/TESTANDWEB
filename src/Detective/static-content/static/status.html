@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Nginx Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status-container {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .status-frame {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fafafa;
+            margin: 20px 0;
+        }
+        .home-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .home-link:hover {
+            background: #2980b9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="status-container">
+    <h1>📊 Nginx Status Monitor</h1>
+    <iframe src="/nginx-status" class="status-frame"></iframe>
+    <div class="footer">
+        <a href="/" class="home-link">🏠 На главную</a>
+    </div>
+</div>
+</body>
+</html>

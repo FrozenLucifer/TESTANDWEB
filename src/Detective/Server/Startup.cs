@@ -9,6 +9,7 @@ using Logic;
 using Logic.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +27,8 @@ public class Startup
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
             
             configuration = builder.Build();
             
@@ -102,7 +104,10 @@ public class Startup
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Detective API V1"); });
+            app.UseSwaggerUI(c => 
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Detective API V1");
+            });
             
             Log.Information("Application configured successfully");
         }

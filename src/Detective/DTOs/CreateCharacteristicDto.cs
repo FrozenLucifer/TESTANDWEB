@@ -1,5 +1,4 @@
-﻿using Domain.Enum;
-using DTOs.Enum;
+﻿using DTOs.Enum;
 
 namespace DTOs;
 
@@ -38,5 +37,5 @@ public class AddPersonPropertyDto
 public class CreateUserDto
 {
     public string username { get; set; }
-    public UserType type { get; set; }
+    public UserTypeDto type { get; set; }
 }

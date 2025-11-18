@@ -1,0 +1,23 @@
+﻿{
+  "dashboard": {
+    "title": "EF Core vs Raw SQL Benchmark",
+    "panels": [
+      {
+        "title": "Response Time Comparison",
+        "type": "stat",
+        "targets": [
+          {"expr": "rate(efcore_duration_ms_sum[5m]) / rate(efcore_duration_ms_count[5m])", "legendFormat": "EF Core"},
+          {"expr": "rate(rawsql_duration_ms_sum[5m]) / rate(rawsql_duration_ms_count[5m])", "legendFormat": "Raw SQL"}
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "type": "stat",
+        "targets": [
+          {"expr": "rate(efcore_errors_total[5m])", "legendFormat": "EF Core Errors"},
+          {"expr": "rate(rawsql_errors_total[5m])", "legendFormat": "Raw SQL Errors"}
+        ]
+      }
+    ]
+  }
+}

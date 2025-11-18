@@ -117,8 +117,7 @@ jobs:
       - name: Start web app (Kestrel) in background
         run: |
           cd src/Detective/Server
-          # Запускаем приложение в фоне, привязав к 0.0.0.0:5000
-          # Убедитесь, что правильный проект запускается (замените путь к проекту, если нужно)
+          
           dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
           echo "Waiting for web app to be ready..."
           for i in {1..30}; do

@@ -26,7 +26,7 @@ public partial class App : Application
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
         Configuration = builder.Build();
         services.AddSingleton<IConfiguration>(Configuration);
@@ -48,7 +48,8 @@ public partial class App : Application
         options.IncludeFields = false;
         options.Converters.Add(new JsonStringEnumConverter());
 
-        string baseUrl = Configuration["ApiConfiguration:BaseUrl"];
+        // string baseUrl = Configuration["ApiConfiguration:BaseUrl"];
+        string baseUrl = "http://localhost:80/";
         services.AddSingleton(new RestClient(baseUrl,
             configureSerialization: s => s.UseSystemTextJson(options)));
 

@@ -48,7 +48,7 @@ public interface IApiClient
 
     Task<List<UserDto>> GetUsersAsync();
 
-    public Task<Guid> AddCharacteristicAsync(CreateCharacteristicDto create);
+    public Task<Guid> AddCharacteristicAsync(Guid personId, CreateCharacteristicDto create);
 
     public Task DeletePersonCharacteristicAsync(Guid propertyId);
 

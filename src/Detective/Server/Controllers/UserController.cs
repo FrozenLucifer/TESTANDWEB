@@ -35,7 +35,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = Policies.Admin)]
     public async Task<ActionResult<string>> CreateUser(CreateUserDto createUserDto)
     {
-        var tmpPassword = await _userService.CreateUser(createUserDto.username, createUserDto.type);
+        var tmpPassword = await _userService.CreateUser(createUserDto.username, createUserDto.type.ToDomain());
         return Ok(tmpPassword);
     }
 

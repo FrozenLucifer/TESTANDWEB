@@ -15,7 +15,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.5" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4"/>
-        <PackageReference Include="PPO.Detective.DTOs" Version="1.0.4.1" />
+        <PackageReference Include="PPO.Detective.DTOs" Version="1.1.0.1" />
         <PackageReference Include="RestSharp" Version="112.1.0"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0"/>
     </ItemGroup>

@@ -12,7 +12,7 @@ public class PostgresDatabaseFixture : DatabaseFixtureBase
     public override async Task InitializeAsync()
     {
         _testDbName = $"TestDb_{DateTime.Now:MMddHHmmss}_{Guid.NewGuid():N}";
-        var connectionString = $"Host=postgres;Database={_testDbName};Username=postgres;Password=1";
+        var connectionString = $"Host=localhost;Database={_testDbName};Username=postgres;Password=1";
 
         var options = new DbContextOptionsBuilder<Context>()
             .UseNpgsql(connectionString)

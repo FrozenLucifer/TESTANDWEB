@@ -30,8 +30,8 @@ public class HttpApiClient : IApiClient
 
     public async Task<LoginResponseDto> LoginAsync(string username, string password)
     {
-        var request = new RestRequest("api/auth", Method.Post);
-        request.AddJsonBody(new { username, password });
+        var request = new RestRequest("api/v1/auth/login", Method.Post);
+        request.AddJsonBody(new LoginRequestDto(username, password));
 
         var response = await _restClient.ExecuteAsync<LoginResponseDto>(request);
 
@@ -45,8 +45,8 @@ public class HttpApiClient : IApiClient
 
     public async Task ChangePasswordAsync(string username, string oldPassword, string newPassword)
     {
-        var request = new RestRequest("api/auth", Method.Patch);
-        request.AddJsonBody(new { username, oldPassword, newPassword });
+        var request = new RestRequest("api/v1/auth/password", Method.Patch);
+        request.AddJsonBody(new ChangePasswordRequestDto(username, oldPassword, newPassword));
 
         await _tokenService.AddAuthHeader(request);
 
@@ -60,14 +60,9 @@ public class HttpApiClient : IApiClient
 
     public async Task<List<PersonDto>> GetPersonsAsync(GetPersonFilterDto filter)
     {
-        var request = new RestRequest("api/persons", Method.Get);
+        var request = new RestRequest("api/v1/persons");
         await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("sex", filter.Sex?.ToString());
-        request.AddQueryParameter("fullName", filter.FullName);
-        request.AddQueryParameter("minBirthDate", filter.MinBirthDate?.ToString("yyyy-MM-dd"));
-        request.AddQueryParameter("maxBirthDate", filter.MaxBirthDate?.ToString("yyyy-MM-dd"));
-        request.AddQueryParameter("limit", filter.Limit?.ToString());
+        request.AddBody(filter);
 
         var response = await _restClient.ExecuteAsync<List<PersonDto>>(request);
 
@@ -81,27 +76,7 @@ public class HttpApiClient : IApiClient
 
     public async Task<Guid> CreatePersonAsync(CreatePersonDto create)
     {
-        var request = new RestRequest("api/persons", Method.Post);
-        await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("sex", create.Sex.ToString());
-        request.AddQueryParameter("fullName", create.FullName);
-        request.AddQueryParameter("birthDate", create.BirthDate.ToString());
-
-        var response = await _restClient.ExecuteAsync<Guid>(request);
-
-        if (!response.IsSuccessful)
-        {
-            throw new ApiException(response.StatusCode);
-        }
-
-        return response.Data;
-    }
-    
-    
-    public async Task<Guid> AddCharacteristicAsync(CreateCharacteristicDto create)
-    {
-        var request = new RestRequest("api/persons/characteristic", Method.Post);
+        var request = new RestRequest("api/v1/persons", Method.Post);
         await _tokenService.AddAuthHeader(request);
 
         request.AddBody(create);
@@ -118,7 +93,7 @@ public class HttpApiClient : IApiClient
 
     public async Task<PersonFullDto> GetPersonInfoAsync(Guid personId)
     {
-        var request = new RestRequest($"api/persons/{personId}", Method.Get);
+        var request = new RestRequest($"api/v1/persons/{personId}");
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync<PersonFullDto>(request);
@@ -133,7 +108,7 @@ public class HttpApiClient : IApiClient
 
     public async Task DeletePersonAsync(Guid personId)
     {
-        var request = new RestRequest($"api/persons/{personId}", Method.Delete);
+        var request = new RestRequest($"api/v1/persons/{personId}", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -146,12 +121,14 @@ public class HttpApiClient : IApiClient
 
     public async Task ChangePersonGeneralInfoAsync(Guid personId, SexDto? sex, string? fullName, DateOnly? birthDate)
     {
-        var request = new RestRequest($"api/persons/{personId}", Method.Patch);
+        var request = new RestRequest($"api/v1/persons/{personId}", Method.Patch);
         await _tokenService.AddAuthHeader(request);
 
-        if (sex.HasValue) request.AddQueryParameter("sex", sex.Value.ToString());
-        if (!string.IsNullOrEmpty(fullName)) request.AddQueryParameter("fullName", fullName);
-        if (birthDate.HasValue) request.AddQueryParameter("birthDate", birthDate.Value.ToString("yyyy-MM-dd"));
+        var x = new CreatePersonDto();
+
+        if (sex.HasValue) x.Sex = sex.Value;
+        if (!string.IsNullOrEmpty(fullName)) x.FullName = fullName;
+        if (birthDate.HasValue) x.BirthDate = birthDate.Value;
 
         var response = await _restClient.ExecuteAsync(request);
 
@@ -163,7 +140,7 @@ public class HttpApiClient : IApiClient
 
     public async Task<List<RelationshipDto>> GetPersonRelationshipsAsync(Guid personId, uint depth = 1)
     {
-        var request = new RestRequest($"api/persons/relationships/{personId}", Method.Get);
+        var request = new RestRequest($"api/v1/persons/{personId}/relationships");
         await _tokenService.AddAuthHeader(request);
 
         request.AddQueryParameter("depth", depth.ToString());
@@ -180,12 +157,10 @@ public class HttpApiClient : IApiClient
 
     public async Task ConnectPersonsAsync(Guid person1Id, Guid person2Id, RelationshipTypeDto type)
     {
-        var request = new RestRequest("api/persons/relationships", Method.Post);
+        var request = new RestRequest("api/v1/persons/relationships", Method.Post);
         await _tokenService.AddAuthHeader(request);
 
-        request.AddQueryParameter("person1Id", person1Id.ToString());
-        request.AddQueryParameter("person2Id", person2Id.ToString());
-        request.AddQueryParameter("type", type.ToString());
+        request.AddBody(new RelationshipDto { Person1Id = person1Id, Person2Id = person2Id, Type = type });
 
         var response = await _restClient.ExecuteAsync(request);
 
@@ -197,11 +172,10 @@ public class HttpApiClient : IApiClient
 
     public async Task DeleteRelationship(Guid person1Id, Guid person2Id)
     {
-        var request = new RestRequest("api/persons/relationships", Method.Delete);
+        var request = new RestRequest("api/v1/persons/relationships", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
-        request.AddQueryParameter("person1Id", person1Id.ToString());
-        request.AddQueryParameter("person2Id", person2Id.ToString());
+        request.AddBody(new DeleteRelationshipDto { person1Id = person1Id, person2Id = person2Id });
 
         var response = await _restClient.ExecuteAsync(request);
 
@@ -213,12 +187,10 @@ public class HttpApiClient : IApiClient
 
     public async Task AddPersonContactAsync(Guid personId, ContactTypeDto type, string info)
     {
-        var request = new RestRequest("api/persons/contacts", Method.Post);
+        var request = new RestRequest($"api/v1/persons/{personId}/contacts", Method.Post);
         await _tokenService.AddAuthHeader(request);
 
-        request.AddQueryParameter("personId", personId.ToString());
-        request.AddQueryParameter("type", type.ToString());
-        request.AddQueryParameter("info", info);
+        request.AddBody(new AddPersonContactDto { info = info, type = type });
 
         var response = await _restClient.ExecuteAsync(request);
 
@@ -230,7 +202,7 @@ public class HttpApiClient : IApiClient
 
     public async Task DeletePersonContactAsync(Guid contactId)
     {
-        var request = new RestRequest($"api/persons/contacts/{contactId}", Method.Delete);
+        var request = new RestRequest($"api/v1/persons/contacts/{contactId}", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -243,28 +215,14 @@ public class HttpApiClient : IApiClient
 
     public async Task<Guid> GetPersonIdByContactAsync(ContactTypeDto type, string info)
     {
-        var request = new RestRequest("api/persons/contacts", Method.Get);
-        await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("type", type.ToString());
-        request.AddQueryParameter("info", info);
-
-        var response = await _restClient.ExecuteAsync<Guid>(request);
-
-        if (!response.IsSuccessful)
-        {
-            throw new ApiException(response.StatusCode);
-        }
-
-        return response.Data;
+        throw new NotImplementedException();
     }
 
     public async Task AddPersonPassportAsync(Guid personId, PassportPayloadDto info)
     {
-        var request = new RestRequest("api/persons/documents/passport", Method.Post);
+        var request = new RestRequest($"api/v1/persons/{personId}/documents", Method.Post);
         await _tokenService.AddAuthHeader(request);
 
-        request.AddQueryParameter("personId", personId.ToString());
         request.AddJsonBody(info);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -277,7 +235,7 @@ public class HttpApiClient : IApiClient
 
     public async Task DeletePersonDocumentAsync(Guid documentId)
     {
-        var request = new RestRequest($"api/persons/documents/{documentId}", Method.Delete);
+        var request = new RestRequest($"api/v1/persons/documents/{documentId}", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -290,12 +248,9 @@ public class HttpApiClient : IApiClient
 
     public async Task AddPersonPropertyAsync(Guid personId, string name, int? cost)
     {
-        var request = new RestRequest("api/persons/property", Method.Post);
+        var request = new RestRequest($"api/v1/persons/{personId}/property", Method.Post);
         await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("personId", personId.ToString());
-        request.AddQueryParameter("name", name);
-        if (cost.HasValue) request.AddQueryParameter("cost", cost.Value.ToString());
+        request.AddBody(new AddPersonPropertyDto { name = name, cost = cost });
 
         var response = await _restClient.ExecuteAsync(request);
 
@@ -307,7 +262,7 @@ public class HttpApiClient : IApiClient
 
     public async Task DeletePersonPropertyAsync(Guid propertyId)
     {
-        var request = new RestRequest($"api/persons/property/{propertyId}", Method.Delete);
+        var request = new RestRequest($"api/v1/persons/property/{propertyId}", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -317,10 +272,28 @@ public class HttpApiClient : IApiClient
             throw new ApiException(response.StatusCode);
         }
     }
-    
+
+    public async Task<Guid> AddCharacteristicAsync(Guid personId, CreateCharacteristicDto create)
+    {
+        var request = new RestRequest($"api/v1/persons/{personId}/characteristic", Method.Post);
+        await _tokenService.AddAuthHeader(request);
+
+        request.AddBody(create);
+
+        var response = await _restClient.ExecuteAsync<Guid>(request);
+
+        if (!response.IsSuccessful)
+        {
+            throw new ApiException(response.StatusCode);
+        }
+
+        return response.Data;
+    }
+
+
     public async Task DeletePersonCharacteristicAsync(Guid propertyId)
     {
-        var request = new RestRequest($"api/persons/characteristic/{propertyId}", Method.Delete);
+        var request = new RestRequest($"api/v1/persons/characteristic/{propertyId}", Method.Delete);
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync(request);
@@ -333,43 +306,10 @@ public class HttpApiClient : IApiClient
 
     public async Task<string> CreateUserAsync(string username, UserTypeDto type)
     {
-        var request = new RestRequest("api/users", Method.Post);
+        var request = new RestRequest("api/v1/users", Method.Post);
         await _tokenService.AddAuthHeader(request);
 
-        request.AddQueryParameter("username", username);
-        request.AddQueryParameter("type", type.ToString());
-
-        var response = await _restClient.ExecuteAsync<string>(request);
-
-        if (!response.IsSuccessful)
-        {
-            throw new ApiException(response.StatusCode);
-        }
-
-        return response.Data;
-    }
-
-    public async Task DeleteUserAsync(string username)
-    {
-        var request = new RestRequest("api/users", Method.Delete);
-        await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("username", username);
-
-        var response = await _restClient.ExecuteAsync(request);
-
-        if (!response.IsSuccessful)
-        {
-            throw new ApiException(response.StatusCode);
-        }
-    }
-
-    public async Task<string> ResetPasswordAsync(string username)
-    {
-        var request = new RestRequest("api/users/reset", Method.Post);
-        await _tokenService.AddAuthHeader(request);
-
-        request.AddQueryParameter("username", username);
+        request.AddBody(new CreateUserDto { username = username, type = type });
 
         var response = await _restClient.ExecuteAsync<string>(request);
 
@@ -383,7 +323,7 @@ public class HttpApiClient : IApiClient
 
     public async Task<List<UserDto>> GetUsersAsync()
     {
-        var request = new RestRequest("api/users", Method.Get);
+        var request = new RestRequest("api/v1/users");
         await _tokenService.AddAuthHeader(request);
 
         var response = await _restClient.ExecuteAsync<List<UserDto>>(request);
@@ -395,6 +335,36 @@ public class HttpApiClient : IApiClient
 
         return response.Data;
     }
+
+    public async Task DeleteUserAsync(string username)
+    {
+        var request = new RestRequest($"api/v1/users/{username}", Method.Delete);
+        await _tokenService.AddAuthHeader(request);
+
+        var response = await _restClient.ExecuteAsync(request);
+
+        if (!response.IsSuccessful)
+        {
+            throw new ApiException(response.StatusCode);
+        }
+    }
+
+    public async Task<string> ResetPasswordAsync(string username)
+    {
+        var request = new RestRequest($"api/v1/users/{username}/reset", Method.Put);
+        await _tokenService.AddAuthHeader(request);
+
+        var response = await _restClient.ExecuteAsync<string>(request);
+
+        if (!response.IsSuccessful)
+        {
+            throw new ApiException(response.StatusCode);
+        }
+
+        return response.Data;
+    }
+
+
 }
 
 public class TokenService

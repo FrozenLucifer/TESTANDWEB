@@ -21,7 +21,7 @@ public class AuthE2ETests : IAsyncLifetime
         _client = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                               ?? "Host=postgres;Port=5432;Database=detective_test;Username=postgres;Password=1";
+                               ?? "Host=localhost;Port=5432;Database=PPO-TEST;Username=postgres;Password=1";
 
         var options = new DbContextOptionsBuilder<Context>()
             .UseNpgsql(connectionString)
