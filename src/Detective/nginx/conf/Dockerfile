@@ -1,4 +1,4 @@
-﻿FROM fabiocicerchia/nginx-lua:alpine
+﻿FROM byjg/nginx-extras
 
 RUN rm -rf /etc/nginx/conf.d/*
 

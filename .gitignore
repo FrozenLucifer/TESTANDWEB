@@ -9,3 +9,5 @@ build/
 allure-report/
 allure-results-merged/
 build_output
+docker_data
+*.rar

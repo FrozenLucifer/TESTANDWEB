@@ -18,8 +18,5 @@ RUN dotnet publish "Server.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-# Создаем health check endpoint
-RUN echo 'using Microsoft.AspNetCore.Builder; using Microsoft.AspNetCore.Http; var builder = WebApplication.CreateBuilder(args); builder.Services.AddControllers(); var app = builder.Build(); app.MapGet("/health", () => Results.Ok("Healthy")); app.MapControllers(); app.Run("http://0.0.0.0:5000");' > Program.cs
-
+3
 ENTRYPOINT ["dotnet", "Server.dll"]

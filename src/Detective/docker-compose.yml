@@ -1,24 +1,49 @@
+x-postgres-base: &postgres-base
+  image: postgres:15
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1
+    POSTGRES_DB: detective
+  networks:
+    - web
+  healthcheck:
+    test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+    interval: 5s
+    retries: 5
+
+x-aspnet-app-base: &aspnet-base
+  build:
+    context: ./Server
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1
+    POSTGRES_DB: detective
+  networks:
+    - web
+  restart: unless-stopped
+
 services:
-  postgres:
-    image: postgres:15
+  postgres-master:
+    <<: *postgres-base
     container_name: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - web
+      - ./docker_data/postgres/master/db_init:/docker-entrypoint-initdb.d
+      - ./docker_data/postgres/master/postgres_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      retries: 5
+  
+  postgres-replica:
+    <<: *postgres-base
+    container_name: postgres-replica
+    volumes:
+      - ./docker_data/postgres/replica/postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    depends_on:
+      - postgres-master
   
   aspnet-app:
-    build:
-      context: ./Server
+    <<: *aspnet-base
     ports:
       - "5000:5000"
     environment:
@@ -26,16 +51,88 @@ services:
       - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=detective;Username=postgres;Password=1
     depends_on:
-      postgres:
+      postgres-master:
         condition: service_healthy
-    networks:
-      - web
-    restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:5000/api/v1/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
+  
+  aspnet-app-ro1:
+    <<: *aspnet-base
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_READONLY=true
+      - ASPNETCORE_URLS=http://+:5001
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=detective;Username=readonly;Password=readonly_pass
+    depends_on:
+      postgres-master:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5001/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  aspnet-app-ro2:
+    <<: *aspnet-base
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_READONLY=true
+      - ASPNETCORE_URLS=http://+:5002
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=detective;Username=readonly;Password=readonly_pass
+    depends_on:
+      postgres-master:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5002/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  aspnet-app-mirror:
+    <<: *aspnet-base
+    ports:
+      - "5003:5003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_READONLY=true
+      - ASPNETCORE_URLS=http://+:5003
+      - ConnectionStrings__DefaultConnection=Host=postgres-replica;Port=5432;Database=detective;Username=readonly;Password=readonly_pass
+    depends_on:
+      postgres-replica:
+        condition: service_healthy
+  
+  aspnet-app-ro1-mirror:
+    <<: *aspnet-base
+    ports:
+      - "5004:5004"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_READONLY=true
+      - ASPNETCORE_URLS=http://+:5004
+      - ConnectionStrings__DefaultConnection=Host=postgres-replica;Port=5432;Database=detective;Username=readonly;Password=readonly_pass
+    depends_on:
+      postgres-replica:
+        condition: service_healthy
+  
+  aspnet-app-ro2-mirror:
+    <<: *aspnet-base
+    ports:
+      - "5005:5005"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_READONLY=true
+      - ASPNETCORE_URLS=http://+:5005
+      - ConnectionStrings__DefaultConnection=Host=postgres-replica;Port=5432;Database=detective;Username=readonly;Password=readonly_pass
+    depends_on:
+      postgres-replica:
+        condition: service_healthy
   
   nginx:
     build:
@@ -43,15 +140,18 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d/server.conf:/etc/nginx/conf.d/server.conf
-      - ./static-content:/var/www/weblab
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf/conf.d/server.conf:/etc/nginx/conf.d/server.conf
+      - ./nginx/static-content:/var/www/weblab
     depends_on:
       - aspnet-app
+      - aspnet-app-ro1
+      - aspnet-app-ro2
     networks:
       - web
     restart: unless-stopped
-
+  
+  
   adminer:
     image: adminer:latest
     container_name: adminer
@@ -60,13 +160,51 @@ services:
     networks:
       - web
     depends_on:
-      - postgres
+      - postgres-master
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
       interval: 30s
       timeout: 10s
       retries: 3
+  
+  loki:
+    image: grafana/loki:3.4.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./nginx/monitoring/loki-config.yaml:/etc/loki/config.yaml:ro
+    command: "-config.file=/etc/loki/config.yaml"
+    networks:
+      - web
+
+  promtail:
+    image: grafana/promtail:3.4.2
+    container_name: promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./nginx/monitoring/promtail-config.yaml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - web
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:9.5.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    volumes:
+      - ./nginx/monitoring/grafana.ini:/etc/grafana/grafana.ini
+      - grafana_data:/var/lib/grafana
+    networks:
+      - web
+    depends_on:
+      - loki
 
 networks:
   web:
@@ -74,3 +212,10 @@ networks:
 
 volumes:
   postgres_data:
+  postgres_replica_data:
+  grafana_data:
+
+
+#docker run --network detective_web -e PGPASSWORD='1' --rm -v "$(pwd)/data:/backup" postgres:15 pg_basebackup -h postgres -p 5432 -U replicator -D /backup -Fp -Xs -R -P -v 
+#docker exec -it postgres psql -U postgres -c \"SELECT client_addr, state, sent_lsn, write_lsn FROM pg_stat_replication;"
+#docker exec -it postgres psql -U postgres -c \"SELECT client_addr, state, sent_lsn, write_lsn FROM pg_stat_replication;"
