@@ -112,7 +112,7 @@ public class ContactRepositoryTests<TFixture>
     {
         var personId = Guid.NewGuid();
         var person = await _personRepository.CreatePerson(personId, null, null, null);
-        
+
         await _contactRepository.CreateContact(Guid.NewGuid(), personId, ContactType.Email, "find@example.com");
 
         var result = await _contactRepository.GetPersonByContact(ContactType.Email, "find@example.com");

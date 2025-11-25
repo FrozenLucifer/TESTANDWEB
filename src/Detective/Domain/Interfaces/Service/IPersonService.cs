@@ -71,7 +71,7 @@ public interface IPersonService
     /// <exception cref="PersonNotFoundException">Один из пользователей с указанными id не существует</exception>
     public Task SetPersonsRelationship(Guid id1, Guid id2, RelationshipType type);
 
-    
+
     /// <summary>
     /// Удалить связь между людьми
     /// </summary>

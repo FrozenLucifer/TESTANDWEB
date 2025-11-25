@@ -17,7 +17,7 @@ public interface IContactRepository
     /// <exception cref="PersonNotFoundRepositoryException">Человека с таким Id не существует</exception>
     /// <exception cref="ContactAlreadyExistsRepositoryException">Контакт с таким Id уже существует</exception>
     public Task CreateContact(Guid id, Guid personId, ContactType type, string info);
-    
+
     /// <summary>
     /// Получить контакты пользователя
     /// </summary>

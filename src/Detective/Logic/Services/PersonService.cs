@@ -123,9 +123,6 @@ public class PersonService(IPersonRepository personRepository,
 
     public async Task<List<Relationship>> GetPersonRelationships(Guid personId, uint depth = 1, List<RelationshipType>? allowedTypes = null)
     {
-        if (personId == Guid.Empty)
-            throw new ArgumentException("Person Id cant be default Guid", nameof(personId));
-
         if (depth == 0)
             throw new ArgumentException("Depth can't be 0", nameof(depth));
 
@@ -145,7 +142,7 @@ public class PersonService(IPersonRepository personRepository,
                 while (currentLevelPersons.Count > 0)
                 {
                     var currentPersonId = currentLevelPersons.Dequeue();
-                    var relationships = await relationshipRepository.GetPersonRelationships(currentPersonId);
+                    var relationships = await relationshipRepository.GetPersonRelationships(currentPersonId).ConfigureAwait(true);
 
                     foreach (var relationship in relationships)
                     {

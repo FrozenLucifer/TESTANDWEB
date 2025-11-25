@@ -68,6 +68,8 @@ public class PersonController : ControllerBase
     [Authorize(Policy = Policies.Edit)]
     public async Task<ActionResult<Guid>> CreatePersons([FromBody] CreatePersonDto create)
     {
+        if (create is null)
+            throw new ArgumentException(null, nameof(create));
         var result = await _personService.CreatePerson(create.Sex.ToDomain(), create.FullName, create.BirthDate);
         return Ok(result);
     }
@@ -180,7 +182,7 @@ public class PersonController : ControllerBase
     [SwaggerResponse(StatusCodes.Status404NotFound)]
     [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "Внутренний сервис не доступен")]
     [Authorize(Policy = Policies.Edit)]
-    public async Task<ActionResult> AddPersonContact([FromRoute] [Required] Guid personId, AddPersonContactDto addPersonContactDto)
+    public async Task<ActionResult> AddPersonContact([FromRoute][Required] Guid personId, AddPersonContactDto addPersonContactDto)
     {
         await _personService.AddPersonContact(personId, addPersonContactDto.type.ToDomain(), addPersonContactDto.info);
         return NoContent();
@@ -214,7 +216,7 @@ public class PersonController : ControllerBase
     [SwaggerResponse(StatusCodes.Status409Conflict)]
     [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "Внутренний сервис не доступен")]
     [Authorize(Policy = Policies.Edit)]
-    public async Task<ActionResult> AddPersonPassport([Required] [FromRoute] Guid personId, [Required] [FromBody] PassportPayloadDto info)
+    public async Task<ActionResult> AddPersonPassport([Required][FromRoute] Guid personId, [Required][FromBody] PassportPayloadDto info)
     {
         await _personService.AddPersonDocument(personId, DocumentType.Passport, JsonSerializer.Serialize(info));
         return NoContent();
@@ -279,7 +281,7 @@ public class PersonController : ControllerBase
     [SwaggerResponse(StatusCodes.Status403Forbidden, "Нет доступа")]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
     [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "Внутренний сервис не доступен")]
-    public async Task<IActionResult> CreateCharacteristic([FromRoute] Guid personId, [Required] [FromBody] CreateCharacteristicDto createDto)
+    public async Task<IActionResult> CreateCharacteristic([FromRoute] Guid personId, [Required][FromBody] CreateCharacteristicDto createDto)
     {
         var username = HttpContext.GetUsername();
         var id = await _personService.CreateCharacteristic(personId,

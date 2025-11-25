@@ -58,7 +58,7 @@ public class CharacteristicRepository : ICharacteristicRepository
             );
 
             await _context.Characteristics.AddAsync(characteristic);
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
         }
         catch (ReferenceConstraintException ex)
         {
@@ -74,7 +74,7 @@ public class CharacteristicRepository : ICharacteristicRepository
     public async Task DeleteCharacteristic(Guid id)
     {
         var characteristicDb = await _context.Characteristics.Where(p => p.Id == id).FirstOrDefaultAsync();
- 
+
         if (characteristicDb is null)
             throw new CharacteristicNotFoundRepositoryException(id);
 

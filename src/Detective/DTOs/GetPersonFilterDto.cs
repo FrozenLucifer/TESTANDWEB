@@ -32,9 +32,9 @@ public class GetPersonFilterDto
     public DateOnly? MaxBirthDate { get; set; }
 
     public ContactTypeDto? ContactType { get; set; }
-    
+
     public string? ContactInfo { get; set; }
-    
+
     /// <summary>
     /// Максимальное количество возвращаемых записей
     /// </summary>

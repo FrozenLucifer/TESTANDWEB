@@ -79,7 +79,7 @@ public class PersonRepository : IPersonRepository
 
         if (limit is > 0)
             query = query.Take(limit.Value);
-        
+
         if (skip is > 0)
             query = query.Skip(skip.Value);
 

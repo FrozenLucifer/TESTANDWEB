@@ -59,7 +59,7 @@ public class PropertyRepository : IPropertyRepository
             throw new PropertyNotFoundRepositoryException(id);
 
         _context.Properties.Remove(personDb);
-        
+
         await _context.SaveChangesAsync();
     }
 }

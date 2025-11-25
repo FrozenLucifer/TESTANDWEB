@@ -93,7 +93,7 @@ public class PersonRepositoryTests<TFixture>
         await Assert.ThrowsAsync<PersonNotFoundRepositoryException>(() =>
             _personRepository.GetPerson(person.Id));
     }
-} 
+}
 
 public class PersonBuilder
 {

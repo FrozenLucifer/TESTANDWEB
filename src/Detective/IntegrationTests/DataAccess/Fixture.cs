@@ -18,7 +18,7 @@ public class PostgresDatabaseFixture : DatabaseFixtureBase
             .UseNpgsql(connectionString)
             .UseExceptionProcessor()
             .Options;
-        
+
         DbContext = new Context(options);
         await DbContext.Database.EnsureCreatedAsync();
     }

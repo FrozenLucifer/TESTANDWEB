@@ -12,7 +12,7 @@ public class Context : DbContext
     public DbSet<PropertyDb> Properties { get; set; }
     public DbSet<RelationshipDb> Relationships { get; set; }
     public DbSet<UserDb> Users { get; set; }
-    
+
     public DbSet<CharacteristicDb> Characteristics { get; set; }
 
     public Context()

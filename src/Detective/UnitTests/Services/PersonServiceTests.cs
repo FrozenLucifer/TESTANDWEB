@@ -67,7 +67,7 @@ public class PersonServiceTests
 
             RelationshipRepositoryMock.Setup(x => x.GetPersonRelationships(personId))
                 .Throws(new PersonNotFoundRepositoryException(personId));
-    
+
             // Act & Assert
             await Assert.ThrowsAsync<PersonNotFoundException>(() => PersonService.GetPersonRelationships(personId, depth));
         }

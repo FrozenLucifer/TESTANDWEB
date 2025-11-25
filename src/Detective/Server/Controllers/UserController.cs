@@ -70,7 +70,7 @@ public class UsersController : ControllerBase
         return Ok(newPassword);
     }
 
-    
+
     /// <summary>
     /// Получить пользователей
     /// </summary>

@@ -39,6 +39,6 @@ public interface IUserRepository
     /// <param name="login">Логин пользователя</param>
     /// <exception cref="UserNotFoundException">Пользователя с таким логином не существует</exception>
     public Task DeleteUser(string login);
-    
+
     public Task<List<User>> GetUsers();
 }

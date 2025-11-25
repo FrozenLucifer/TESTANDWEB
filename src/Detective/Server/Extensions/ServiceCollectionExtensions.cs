@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         using var scope = serviceProvider.CreateScope();
 
         var dbContext = scope.ServiceProvider.GetRequiredService<Context>();
-        
+
         dbContext.Database.Migrate();
     }
 }

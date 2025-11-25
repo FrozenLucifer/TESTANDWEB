@@ -74,7 +74,7 @@ public class ExceptionMiddleware
                 break;
         }
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse)).ConfigureAwait(true);
     }
 }
 

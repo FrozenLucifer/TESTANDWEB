@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
-    
+
     /// <summary>
     /// Авторизация через логин-пароль
     /// </summary>

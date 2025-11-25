@@ -9,6 +9,6 @@ public class UserDb(string username,
     public string Username = username;
     public string Password = password;
     public UserType Type = type;
-    
+
     public ICollection<CharacteristicDb> Characteristics;
 }

@@ -20,7 +20,7 @@ public static class SwaggerExtension
                 if (File.Exists(xmlFilePath))
                     options.IncludeXmlComments(xmlFilePath, includeControllerXmlComments: true);
             }
-            
+
             options.EnableAnnotations();
 
             options.AddSwaggerSecurity();

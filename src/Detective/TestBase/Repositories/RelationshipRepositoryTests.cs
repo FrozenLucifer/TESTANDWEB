@@ -141,7 +141,7 @@ public class RelationshipRepositoryTests<TFixture>
         await Assert.ThrowsAsync<RelationshipNotFoundRepositoryException>(() =>
             _relationshipRepository.GetPersonsRelationship(id1, id2));
     }
-    
+
     [Fact]
     public async Task SetRelationship_ShouldUpdateExistingRelationship()
     {
@@ -150,7 +150,7 @@ public class RelationshipRepositoryTests<TFixture>
         var id2 = Guid.NewGuid();
         await _personRepository.CreatePerson(id1, null, null, null);
         await _personRepository.CreatePerson(id2, null, null, null);
-        
+
         await _relationshipRepository.SetRelationship(id1, id2, RelationshipType.Friend);
 
         // Act

@@ -21,7 +21,7 @@ public class InMemoryDatabaseFixture : DatabaseFixtureBase
             .Options;
 
         DbContext = new Context(options);
-        
+
         DbContext.Database.EnsureCreated();
 
         return Task.CompletedTask;

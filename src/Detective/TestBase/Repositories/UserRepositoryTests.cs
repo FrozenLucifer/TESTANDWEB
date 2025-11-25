@@ -29,7 +29,7 @@ public class UserRepositoryTests<TFixture>
     {
         // Act
         await _userRepository.CreateUser("user1", "pass1", UserType.Admin);
-        
+
         // Assert
         var loaded = await _userRepository.GetUser("user1");
         Assert.Equal("user1", loaded.Username);
@@ -43,7 +43,7 @@ public class UserRepositoryTests<TFixture>
         var user = new UserBuilder()
             .WithUsername("user2")
             .Build();
-        
+
         _dbContext.Users.Add(user);
 
         await Assert.ThrowsAsync<UserAlreadyExistsRepositoryException>(() =>
@@ -64,7 +64,7 @@ public class UserRepositoryTests<TFixture>
             .WithUsername("user3")
             .WithPassword("oldpass")
             .Build();
-        
+
         _dbContext.Users.Add(user);
 
         await _userRepository.ChangePassword(user.Username, "newpass");
@@ -86,7 +86,7 @@ public class UserRepositoryTests<TFixture>
         var user = new UserBuilder()
             .WithUsername("user4")
             .Build();
-        
+
         _dbContext.Users.Add(user);
 
         await _userRepository.DeleteUser(user.Username);
@@ -112,7 +112,7 @@ public class UserRepositoryTests<TFixture>
         var user2 = new UserBuilder()
             .WithUsername("user6")
             .Build();
-        
+
         _dbContext.Users.Add(user1);
         _dbContext.Users.Add(user2);
         await _dbContext.SaveChangesAsync();

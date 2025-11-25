@@ -34,7 +34,7 @@ class Program
     private static async Task SeedDataPresetAsync(Context context)
     {
         var hasher = new PasswordHasher();
-        
+
         foreach (UserType userType in Enum.GetValues(typeof(UserType)))
         {
             var username = userType.ToString();
@@ -42,9 +42,9 @@ class Program
             var user = new UserDb(username, passwordHash, userType);
             await context.Users.AddAsync(user);
         }
-        
+
         await context.SaveChangesAsync();
-        
+
         var persons = new[]
         {
             new PersonDb(Guid.NewGuid(), Sex.Male, "Алехандро", null),
@@ -65,11 +65,11 @@ class Program
             new RelationshipDb(persons[1].Id, persons[4].Id, RelationshipType.Colleague), // Сырник и Женщина Два - коллеги
             new RelationshipDb(persons[3].Id, persons[4].Id, RelationshipType.Sibling), // Женщина Один и Женщина Два - сестры
         };
-        
+
         var inverseRelationships = relationships
             .Select(r => new RelationshipDb(
-                r.Person2Id, 
-                r.Person1Id, 
+                r.Person2Id,
+                r.Person1Id,
                 RelationshipHelper.GetInverseRelationship(r.Type)))
             .ToList();
 
@@ -90,8 +90,8 @@ class Program
             new PersonDb(Guid.NewGuid(), Sex.Female, "Женщина Два", null),
             new PersonDb(Guid.NewGuid(), Sex.Male, "Женщина Три", null),
         };
-        
-        
+
+
 
         await context.Persons.AddRangeAsync(persons);
         await context.SaveChangesAsync();
