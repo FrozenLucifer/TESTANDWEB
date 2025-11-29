@@ -13,8 +13,7 @@ public class PostgresDatabaseFixture : DatabaseFixtureBase
     {
         var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
         _testDbName = $"TestDb_{DateTime.Now:MMddHHmmss}_{Guid.NewGuid():N}";
-        // var connectionString = $"Host={host};Database={_testDbName};Username=postgres;Password=1";
-        var connectionString = $"Host=postgres;Database={_testDbName};Username=postgres;Password=1";
+        var connectionString = $"Host={host};Database={_testDbName};Username=postgres;Password=1;Port=5432";
 
         var options = new DbContextOptionsBuilder<Context>()
             .UseNpgsql(connectionString)
