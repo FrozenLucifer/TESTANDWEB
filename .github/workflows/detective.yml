@@ -45,9 +45,7 @@ jobs:
       - name: Run unit tests
         run: |
           cd src/Detective
-          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../build_output
-          echo "--- After tests ---"
-          ls -R .
+          dotnet test Tests/UnitTests/UnitTests.csproj --no-build --logger:"allure;LogFilePath=../../build_output/allure-results"
 
       - name: Debug search for allure-results
         run: |
