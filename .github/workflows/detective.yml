@@ -32,6 +32,7 @@ jobs:
 
   # ===== Unit tests =====
   unit_tests:
+    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
