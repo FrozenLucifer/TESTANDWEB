@@ -134,7 +134,7 @@ jobs:
         run: |
           cd src/Detective
           TEST_BASE_URL=http://localhost:5000 dotnet test E2ETests/E2ETests.csproj --no-build -o ../../build_output
-          
+
       - name: Print server logs
         if: always()
         run: |
@@ -148,6 +148,77 @@ jobs:
         with:
           name: allure-results-e2e
           path: build_output/allure-results
+    
+    # ===== BDD / Gherkin tests =====
+  bdd_tests:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/dotnet/sdk:8.0
+    needs: e2e_tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1
+          POSTGRES_DB: detective_test
+        ports:
+          - 5432:5432
+        options: --pull always
+      smtp4dev:
+        image: rnwood/smtp4dev:latest
+        ports:
+          - 8025:80
+          - 5025:25
+        options: --pull always
+    env:
+      TEST_BASE_URL: http://localhost:5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=postgres;Password=1;Database=detective_test
+      SMTP_HOST: smtp4dev
+      SMTP_PORT: 25
+      SMTP_UI: http://localhost:8025
+      ASPNETCORE_ENVIRONMENT: Test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build_output
+          path: build_output
+
+      - name: Start web app (Kestrel) in background
+        run: |
+          cd src/Detective/Server
+          dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
+          echo "Waiting for web app to be ready..."
+          for i in {1..30}; do
+            if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
+              echo "Server is up"
+              break
+            fi
+            echo "Waiting... ($i)"  
+            sleep 2
+          done
+          sleep 10
+
+      - name: Run BDD / SpecFlow tests
+        run: |
+          cd src/Detective/BDDTests
+          TEST_BASE_URL=http://localhost:5000 SMTP_HOST=smtp4dev SMTP_PORT=25 SMTP_UI=http://localhost:8025 \
+          dotnet test BDDTests.csproj --no-build -o ../../build_output
+
+      - name: Print server logs
+        if: always()
+        run: |
+          echo "========= SERVER LOGS ========="
+          cat src/Detective/Server/server.log || echo "Нет логов (файл отсутствует)"
+          echo "==============================="
+
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-bdd
+          path: build_output/allure-results
+    
     
     # ===== Allure Report =====
   allure_report:
@@ -178,13 +249,13 @@ jobs:
         with:
           name: allure-results-unit
           path: build_output/allure-results
-          
+
       - name: Download allure results
         uses: actions/download-artifact@v4
         with:
           name: allure-results-integration
           path: build_output/allure-results
-          
+
       - name: Download allure results
         uses: actions/download-artifact@v4
         with:

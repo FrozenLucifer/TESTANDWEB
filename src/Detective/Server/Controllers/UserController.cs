@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Detective.Dtos;
 using Detective.Dtos.Converters;
 using Detective.Extensions;
-using Domain.Enum;
 using Domain.Interfaces.Service;
 using DTOs;
 using Microsoft.AspNetCore.Authorization;

@@ -21,8 +21,8 @@ public enum RelationshipType
 
 public static class RelationshipFilter
 {
-    public static List<RelationshipType> Family() => new()
-    {
+    public static IReadOnlyCollection<RelationshipType> Family() =>
+    [
         RelationshipType.Parent,
         RelationshipType.StepParent,
         RelationshipType.Child,
@@ -30,17 +30,17 @@ public static class RelationshipFilter
         RelationshipType.Spouse,
         RelationshipType.ExSpouse,
         RelationshipType.Sibling,
-        RelationshipType.StepSiblings
-    };
+        RelationshipType.StepSiblings,
+    ];
 
-    public static List<RelationshipType> Work() => new()
-    {
+    public static IReadOnlyCollection<RelationshipType> Work() =>
+    [
         RelationshipType.Employer,
         RelationshipType.Employee,
         RelationshipType.Colleague,
         RelationshipType.Mentor,
-        RelationshipType.Protege
-    };
+        RelationshipType.Protege,
+    ];
 }
 
 public static class RelationshipHelper

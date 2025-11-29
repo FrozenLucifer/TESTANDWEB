@@ -1,5 +1,4 @@
 ﻿using Domain.Enum;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services;
 using Domain.Interfaces.Repository;
@@ -47,7 +46,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", id);
+            logger.LogError("Person not found with id = {Id}", id);
             throw new PersonNotFoundException(id);
         }
         catch (Exception ex)
@@ -68,7 +67,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", id);
+            logger.LogError("Person not found with id = {Id}", id);
             throw new PersonNotFoundException(id);
         }
         catch (Exception ex)
@@ -111,7 +110,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", id);
+            logger.LogError("Person not found with id = {Id}", id);
             throw new PersonNotFoundException(id);
         }
         catch (Exception ex)
@@ -121,7 +120,9 @@ public class PersonService(IPersonRepository personRepository,
         }
     }
 
-    public async Task<List<Relationship>> GetPersonRelationships(Guid personId, uint depth = 1, List<RelationshipType>? allowedTypes = null)
+    public async Task<List<Relationship>> GetPersonRelationships(Guid personId,
+        uint depth = 1U,
+        IReadOnlyCollection<RelationshipType>? allowedTypes = null)
     {
         if (depth == 0)
             throw new ArgumentException("Depth can't be 0", nameof(depth));
@@ -174,7 +175,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", personId);
+            logger.LogError("Person not found with id = {Id}", personId);
             throw new PersonNotFoundException();
         }
         catch (Exception ex)
@@ -198,7 +199,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id1} or {id2}", id1, id2);
+            logger.LogError("Person not found with id = {Id1} or {Id2}", id1, id2);
             throw new PersonNotFoundException();
         }
         catch (Exception ex)
@@ -222,12 +223,12 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id1} or {id2}", id1, id2);
+            logger.LogError("Person not found with id = {Id1} or {Id2}", id1, id2);
             throw new PersonNotFoundException();
         }
         catch (RelationshipNotFoundRepositoryException)
         {
-            logger.LogError("Relationship not found between {id1} and {id2}", id1, id2);
+            logger.LogError("Relationship not found between {Id1} and {Id2}", id1, id2);
             throw new RelationshipNotFoundException(id1, id2);
         }
         catch (Exception ex)
@@ -250,7 +251,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", personId);
+            logger.LogError("Person not found with id = {Id}", personId);
             throw new PersonNotFoundException();
         }
         catch (Exception ex)
@@ -273,7 +274,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", personId);
+            logger.LogError("Person not found with id = {Id}", personId);
             throw new PersonNotFoundException();
         }
         catch (Exception ex)
@@ -296,7 +297,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (PersonNotFoundRepositoryException)
         {
-            logger.LogError("Person not found with id = {id}", personId);
+            logger.LogError("Person not found with id = {Id}", personId);
             throw new PersonNotFoundException();
         }
         catch (Exception ex)
@@ -317,7 +318,7 @@ public class PersonService(IPersonRepository personRepository,
         }
         catch (ContactNotFoundRepositoryException)
         {
-            logger.LogError("Contact not found with id = {id}", contactId);
+            logger.LogError("Contact not found with id = {Id}", contactId);
             throw new ContactNotFoundException(contactId);
         }
         catch (Exception ex)

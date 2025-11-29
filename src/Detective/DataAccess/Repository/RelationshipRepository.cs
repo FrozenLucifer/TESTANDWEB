@@ -1,7 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.Converters;
 using Domain.Enum;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;

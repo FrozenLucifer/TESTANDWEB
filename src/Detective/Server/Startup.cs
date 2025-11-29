@@ -9,7 +9,6 @@ using Logic;
 using Logic.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -59,13 +58,15 @@ public class Startup
             services.AddScopedRepositories();
             services.ApplyMigrations();
 
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IPasswordProvider, PasswordProvider>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddOptions<JwtConfiguration>().Bind(Configuration.GetSection(JwtConfiguration.ConfigurationSectionName));
+            services.AddOptions<EmailConfiguration>().Bind(Configuration.GetSection(EmailConfiguration.ConfigurationSectionName));
 
             services.AddControllers()
                 .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
@@ -83,7 +84,7 @@ public class Startup
         }
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         try
         {

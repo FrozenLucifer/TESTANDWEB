@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Detective.Dtos;
-using Domain.Interfaces.Service;
+﻿using Domain.Interfaces.Service;
 using DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +29,37 @@ public class AuthController : ControllerBase
     [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "Внутренний сервис не доступен")]
     public async Task<ActionResult<LoginResponseDto>> Auth([FromBody] LoginRequestDto request)
     {
-        var result = await _authService.Login(request.Username, request.Password);
-        var response = new LoginResponseDto(result);
+        var token = await _authService.Login(request.Username, request.Password);
+        var response = new LoginResponseDto(token);
+        return Ok(response);
+    }
+    
+    /// <summary>
+    /// Запуск двухфакторной аутентификации: проверка логин/пароль + отправка кода
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("2fa/login")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Код отправлен на email")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Неверный логин или пароль")]
+    public async Task<ActionResult> TwoFactorLogin([FromBody] LoginRequestDto request)
+    {
+        await _authService.TwoFactorLogin(request.Username, request.Password);
+
+        return Ok();
+    }
+
+
+    /// <summary>
+    /// Подтверждение двухфакторной аутентификации
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("2fa/confirm")]
+    [SwaggerResponse(StatusCodes.Status200OK, "2FA подтверждена", typeof(LoginResponseDto))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Неверный или просроченный код")]
+    public async Task<ActionResult> TwoFactorConfirm([FromBody] TwoFactorConfirmRequestDto request)
+    {
+        var token = await _authService.TwoFactorConfirm(request.Username, request.Code);
+        var response = new LoginResponseDto(token);
         return Ok(response);
     }
 

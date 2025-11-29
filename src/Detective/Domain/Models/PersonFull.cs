@@ -7,22 +7,22 @@ public class PersonFull(
     Sex? sex,
     string? fullName,
     DateOnly? birthDate,
-    List<Contact> contacts,
-    List<Document> documents,
-    List<Property> properties,
-    List<Characteristic> characteristics)
+    IReadOnlyCollection<Contact> contacts,
+    IReadOnlyCollection<Document> documents,
+    IReadOnlyCollection<Property> properties,
+    IReadOnlyCollection<Characteristic> characteristics)
     : Person(id, sex, fullName, birthDate)
 {
-    public List<Contact> Contacts = contacts;
-    public List<Document> Documents = documents;
-    public List<Property> Properties = properties;
-    public List<Characteristic> Characteristic = characteristics;
+    public IReadOnlyCollection<Contact> Contacts { get; set; } = contacts;
+    public IReadOnlyCollection<Document> Documents { get; set; } = documents;
+    public IReadOnlyCollection<Property> Properties { get; set; } = properties;
+    public IReadOnlyCollection<Characteristic> Characteristic { get; set; } = characteristics;
 
     public PersonFull(Person person,
-        List<Contact> contacts,
-        List<Document> documents,
-        List<Property> properties,
-        List<Characteristic> characteristics) :
+        IReadOnlyCollection<Contact> contacts,
+        IReadOnlyCollection<Document> documents,
+        IReadOnlyCollection<Property> properties,
+        IReadOnlyCollection<Characteristic> characteristics) :
         this(person.Id,
             person.Sex,
             person.FullName,

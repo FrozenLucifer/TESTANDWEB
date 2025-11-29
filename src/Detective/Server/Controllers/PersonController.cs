@@ -6,7 +6,6 @@ using Domain.Enum;
 using Domain.Interfaces.Service;
 using Domain.Models;
 using DTOs;
-using DTOs.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

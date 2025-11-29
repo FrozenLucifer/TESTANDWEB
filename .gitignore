@@ -11,3 +11,4 @@ allure-results-merged/
 build_output
 docker_data
 *.rar
+*.feature.cs

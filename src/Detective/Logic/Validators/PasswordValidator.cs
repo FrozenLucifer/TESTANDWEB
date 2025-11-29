@@ -18,6 +18,6 @@ public class PasswordValidator : AbstractValidator<string>
 
     private bool NotContainWhitespace(string password)
     {
-        return !string.IsNullOrWhiteSpace(password) && !password.Contains(" ");
+        return !string.IsNullOrWhiteSpace(password) && !password.Contains(' ', StringComparison.Ordinal);
     }
 }

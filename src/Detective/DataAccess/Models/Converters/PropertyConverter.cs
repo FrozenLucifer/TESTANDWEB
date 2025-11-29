@@ -9,11 +9,3 @@ public static class PropertyConverter
         return new Property(property.Id, property.PersonId, property.Name, property.Cost);
     }
 }
-
-public static class DocumentConverter
-{
-    public static Document ToDomain(this DocumentDb property)
-    {
-        return new Document(property.Id, property.PersonId, property.Type, property.Payload);
-    }
-}

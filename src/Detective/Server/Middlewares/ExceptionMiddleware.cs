@@ -82,10 +82,6 @@ public class ErrorResponse
 {
     public string Message { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? StackTrace { get; set; }
-
-
     public ErrorResponse(Exception ex)
     {
         Message = ex.Message;

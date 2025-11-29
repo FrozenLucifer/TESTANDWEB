@@ -40,11 +40,16 @@ public class DocumentValidator : AbstractValidator<(DocumentType type, string pa
             JsonDocument.Parse(json);
             return true;
         }
-        catch
+        catch (JsonException)
         {
             return false;
         }
     }
+
+    private static readonly JsonSerializerOptions MyOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     private static (bool isValid, List<string> errors) ValidatePassportPayload(string json)
     {
@@ -52,7 +57,7 @@ public class DocumentValidator : AbstractValidator<(DocumentType type, string pa
 
         try
         {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var options = MyOptions;
             var passport = JsonSerializer.Deserialize<PassportPayload>(json, options);
 
             if (passport == null)

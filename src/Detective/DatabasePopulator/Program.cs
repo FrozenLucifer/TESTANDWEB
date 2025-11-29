@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using DataAccess;
 using DataAccess.Models;
@@ -9,7 +10,8 @@ namespace DatabasePopulator;
 
 class Program
 {
-    static async Task Main(string[] args)
+    [SuppressMessage("Globalization", "CA1303:Не передавать литералы в качестве локализованных параметров")]
+    private static async Task Main()
     {
         Console.WriteLine("Start");
 
@@ -33,13 +35,20 @@ class Program
 
     private static async Task SeedDataPresetAsync(Context context)
     {
-        var hasher = new PasswordHasher();
+        var hasher = new PasswordProvider();
 
         foreach (UserType userType in Enum.GetValues(typeof(UserType)))
         {
             var username = userType.ToString();
             var passwordHash = hasher.HashPassword(username);
-            var user = new UserDb(username, passwordHash, userType);
+            string email;
+            if (userType == UserType.Admin)
+            {
+                email = "andrey.12.56.34@gmail.com";
+            }
+            else
+                email = username + "@test.com";
+            var user = new UserDb(username, passwordHash, email, userType);
             await context.Users.AddAsync(user);
         }
 
@@ -76,24 +85,6 @@ class Program
         var allRelationships = relationships.Concat(inverseRelationships).ToList();
 
         await context.Relationships.AddRangeAsync(allRelationships);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedDataRandomAsync(Context context)
-    {
-        var persons = new[]
-        {
-            new PersonDb(Guid.NewGuid(), Sex.Male, "Алехандро", null),
-            new PersonDb(Guid.NewGuid(), Sex.Male, "Сырник", null),
-            new PersonDb(Guid.NewGuid(), Sex.Male, "Иван Иванович", null),
-            new PersonDb(Guid.NewGuid(), Sex.Female, "Женщина Один", null),
-            new PersonDb(Guid.NewGuid(), Sex.Female, "Женщина Два", null),
-            new PersonDb(Guid.NewGuid(), Sex.Male, "Женщина Три", null),
-        };
-
-
-
-        await context.Persons.AddRangeAsync(persons);
         await context.SaveChangesAsync();
     }
 }

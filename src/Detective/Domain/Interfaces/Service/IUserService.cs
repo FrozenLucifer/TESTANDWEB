@@ -1,5 +1,4 @@
 ﻿using Domain.Enum;
-using Domain.Exceptions;
 using Domain.Exceptions.Services;
 using Domain.Models;
 

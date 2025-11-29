@@ -1,6 +1,5 @@
 ﻿using Domain.Enum;
 using Domain.Models;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 
 namespace Domain.Interfaces.Repository;

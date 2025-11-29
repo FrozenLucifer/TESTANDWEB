@@ -22,6 +22,11 @@ public class Relationship(Guid personId1,
 
     public override bool Equals(object obj) => Equals(obj as Relationship);
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(PersonId1, PersonId2, (int)Type);
+    }
+
     public bool Equals(Relationship? other)
     {
         if (other is null) return false;
