@@ -20,7 +20,7 @@ public class AuthSteps : IDisposable
     private readonly DbContextOptions<Context> _options;
 
     private readonly RestClient _client = new("http://localhost:5000");
-    private readonly RestClient _mailClient = new("http://localhost:8025");
+    private readonly RestClient _mailClient = new(Environment.GetEnvironmentVariable("SMTP_UI") ?? "http://localhost:8025");
     private readonly string _username = "test_user";
     private readonly string _password = "Test123!";
     private readonly string _email = "test@local";
