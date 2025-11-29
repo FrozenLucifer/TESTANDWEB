@@ -65,6 +65,7 @@ public class AuthSteps : IDisposable
             .AddJsonBody(new LoginRequestDto(Username: _username, Password: _password));
 
         var resp = await _client.ExecuteAsync(req);
+        Console.WriteLine($"Login response: IsSuccessful={resp.IsSuccessful}, Error={resp.ErrorMessage}");
 
         resp.IsSuccessful.Should().BeTrue();
     }
