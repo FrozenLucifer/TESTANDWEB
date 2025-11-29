@@ -45,7 +45,7 @@ jobs:
       - name: Run unit tests
         run: |
           cd src/Detective
-          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../build_output
+          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../../build_output
 
       - name: Upload allure results
         uses: actions/upload-artifact@v4
@@ -82,7 +82,7 @@ jobs:
       - name: Run integration tests
         run: |
           cd src/Detective
-          dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
+          dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../../build_output
 
       - name: Upload allure results
         if: always()
@@ -136,7 +136,7 @@ jobs:
       - name: Run E2E tests against real server
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
+          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../../build_output
 
       - name: Print server logs
         if: always()
@@ -201,7 +201,7 @@ jobs:
       - name: Run BDD / SpecFlow tests
         run: |
           cd src/Detective
-          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../build_output
+          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../../build_output
 
       - name: Print server logs
         if: always()
@@ -263,8 +263,8 @@ jobs:
       - name: Download allure results
         uses: actions/download-artifact@v4
         with:
-          path: build_output/allure-results
           name: allure-results-bdd
+          path: build_output/allure-results
       
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
