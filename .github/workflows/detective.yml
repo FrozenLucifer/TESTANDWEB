@@ -14,7 +14,7 @@ jobs:
     container: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Restore dependencies
         run: |
@@ -37,7 +37,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Searching for allure-results..."
           find . -type d -name "allure-results" -print
-          
+
       - name: Upload allure results
         uses: actions/upload-artifact@v4
         with:
@@ -63,23 +63,20 @@ jobs:
       - name: Debug list files
         run: |
           echo "ROOT:"
-          find . -maxdepth 4 -type d -name "allure-results" -print
+          find / -type d -name "allure-results" -print
           echo "--- FULL TREE ---"
           find . | head -n 1000
             - name: Debug list files
-          
+
       - name: Debug list files 2
         run: |
           echo "--- FULL TREE ---"
           find .. | head
-          
+
       - name: Debug check UnitTests folder
         run: |
           echo "Listing UnitTests dir:"
           ls -R src/Detective/Tests/UnitTests   
-        
-          
-          
   
   # ===== Integration tests =====
   integration_tests:
@@ -102,7 +99,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -150,7 +147,7 @@ jobs:
       ASPNETCORE_ENVIRONMENT: Test
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -215,7 +212,7 @@ jobs:
       ASPNETCORE_ENVIRONMENT: Test
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -276,25 +273,25 @@ jobs:
       
       # ---------- Download test results ----------
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-unit
           path: build_output/allure-results
 
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-integration
           path: build_output/allure-results
 
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-e2e
           path: build_output/allure-results
 
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-bdd
           path: build_output/allure-results
@@ -310,7 +307,7 @@ jobs:
       
       # ---------- Publish Allure Report ----------
       - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

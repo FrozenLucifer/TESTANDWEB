@@ -27,7 +27,7 @@ public class RelationshipRepository : IRelationshipRepository
 
             var relationshipDb2 = await _context.Relationships.FindAsync(id2, id1);
             if (relationshipDb2 is null)
-                throw new RelationshipNotFoundRepositoryException(id2, id1);
+                throw new RelationshipNotFoundRepositoryException(id2:id1, id1:id2);
 
             _context.Relationships.Remove(relationshipDb1);
             _context.Relationships.Remove(relationshipDb2);
@@ -61,11 +61,11 @@ public class RelationshipRepository : IRelationshipRepository
         }
     }
 
-    public async Task<RelationshipType> GetPersonsRelationship(Guid id1, Guid id2)
+    public async Task<RelationshipType> GetPersonsRelationship(Guid person1Id, Guid person2Id)
     {
-        var relationshipDb = await _context.Relationships.FindAsync(id1, id2);
+        var relationshipDb = await _context.Relationships.FindAsync(person1Id, person2Id);
         if (relationshipDb is null)
-            throw new RelationshipNotFoundRepositoryException(id1, id2);
+            throw new RelationshipNotFoundRepositoryException(person1Id, person2Id);
 
         return relationshipDb.Type;
     }

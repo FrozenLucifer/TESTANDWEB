@@ -13,7 +13,7 @@ public class UserRepositoryTests<TFixture> : IAsyncLifetime
 {
     private TFixture _fixture;
     private Context _dbContext;
-    private IUserRepository _userRepository;
+    private UserRepository _userRepository;
 
 
     public async Task InitializeAsync()

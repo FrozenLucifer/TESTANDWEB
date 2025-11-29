@@ -7,10 +7,10 @@ public class UserDb(string username,
     string email,
     UserType type)
 {
-    public string Username = username;
-    public string Password = password;
-    public string Email = email;
-    public UserType Type = type;
+    public string Username { get; init; } = username;
+    public string Password { get; set; } = password;
+    public string Email { get; init; }= email;
+    public UserType Type { get; init; }= type;
 
     public ICollection<CharacteristicDb> Characteristics;
 }

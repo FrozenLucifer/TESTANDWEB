@@ -27,6 +27,7 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
     private readonly HttpClient _client;
     private readonly IServiceScope _scope;
     private readonly Context _db;
+    private string _username;
 
     public AuthE2ETests(CustomWebApplicationFactory factory)
     {
@@ -38,9 +39,9 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
 
     public async Task InitializeAsync()
     {
-        var username = "test_user";
+        _username = $"test_user{DateTime.Now.ToString()}";
         var passwordHash = new PasswordProvider().HashPassword("OldPassword123!");
-        var user = new UserDb(username, passwordHash, "", UserType.Admin);
+        var user = new UserDb(_username, passwordHash, "", UserType.Admin);
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
@@ -55,7 +56,7 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
     [Fact]
     public async Task AuthAndChangePassword_FullFlow_WorksCorrectly()
     {
-        var username = "test_user";
+        var username = _username;
         var oldPassword = "OldPassword123!";
         var newPassword = "NewPassword456!";
 

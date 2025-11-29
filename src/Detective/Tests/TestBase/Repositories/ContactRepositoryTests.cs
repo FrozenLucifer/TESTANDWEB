@@ -12,8 +12,8 @@ public class ContactRepositoryTests<TFixture> : IAsyncLifetime
 {
     private TFixture _fixture;
     private Context _dbContext;
-    private IContactRepository _contactRepository;
-    private IPersonRepository _personRepository;
+    private ContactRepository _contactRepository;
+    private PersonRepository _personRepository { get; set; }
 
     public async Task InitializeAsync()
     {
