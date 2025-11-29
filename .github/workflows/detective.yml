@@ -62,6 +62,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+          POSTGRES_HOST: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1
           POSTGRES_DB: detective_test
@@ -222,7 +223,7 @@ jobs:
     
     # ===== Allure Report =====
   allure_report:
-    needs: [ unit_tests, integration_tests, e2e_tests ]
+    needs: [ unit_tests, integration_tests, e2e_tests, bdd_tests ]
     if: always()
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
