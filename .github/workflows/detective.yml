@@ -60,13 +60,13 @@ jobs:
           name: allure-results-unit
           path: build_output/allure-results
 
-      - name: Debug list files
-        run: |
-          echo "ROOT:"
-          find / -type d -name "allure-results" -print
-          echo "--- FULL TREE ---"
-          find . | head -n 1000
-            - name: Debug list files
+#      - name: Debug list files
+#        run: |
+#          echo "ROOT:"
+#          find / -type d -name "allure-results" -print
+#          echo "--- FULL TREE ---"
+#          find . | head -n 1000
+#            - name: Debug list files
 
 #      - name: Debug list files 2
 #        run: |
