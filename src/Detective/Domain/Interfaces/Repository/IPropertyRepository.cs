@@ -14,7 +14,7 @@ public interface IPropertyRepository
     /// <param name="cost">Стоимость в рублях</param>
     public Task CreateProperty(Guid id, Guid personId, string name, int? cost);
 
-    public Task<List<Property>> GetPersonProperties(Guid personId);
+    public Task<List<PersonProperty>> GetPersonProperties(Guid personId);
 
     /// <summary>
     /// 

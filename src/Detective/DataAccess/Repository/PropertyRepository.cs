@@ -37,7 +37,7 @@ public class PropertyRepository : IPropertyRepository
         }
     }
 
-    public async Task<List<Property>> GetPersonProperties(Guid personId)
+    public async Task<List<PersonProperty>> GetPersonProperties(Guid personId)
     {
         var personDb = await _context.Persons
             .Include(p => p.Properties)

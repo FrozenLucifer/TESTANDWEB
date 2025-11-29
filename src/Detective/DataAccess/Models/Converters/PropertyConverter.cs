@@ -4,8 +4,8 @@ namespace DataAccess.Models.Converters;
 
 public static class PropertyConverter
 {
-    public static Property ToDomain(this PropertyDb property)
+    public static PersonProperty ToDomain(this PropertyDb property)
     {
-        return new Property(property.Id, property.PersonId, property.Name, property.Cost);
+        return new PersonProperty(property.Id, property.PersonId, property.Name, property.Cost);
     }
 }

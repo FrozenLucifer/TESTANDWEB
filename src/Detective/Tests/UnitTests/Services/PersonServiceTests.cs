@@ -362,7 +362,7 @@ public class PersonServiceTests
             var person = new Person(personId, Sex.Female, "Jane Doe", new DateOnly(1995, 5, 5));
             var contacts = new List<Contact> { new(Guid.NewGuid(), personId, ContactType.Phone, "+79991112233") };
             var documents = new List<Document>();
-            var properties = new List<Property>();
+            var properties = new List<PersonProperty>();
 
             PersonRepositoryMock.Setup(x => x.GetPerson(personId)).ReturnsAsync(person);
             ContactRepositoryMock.Setup(x => x.GetPersonContacts(personId, null)).ReturnsAsync(contacts);

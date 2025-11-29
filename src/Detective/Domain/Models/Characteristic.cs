@@ -7,11 +7,11 @@ public class Characteristic(Guid id,
     string personality,
     string medicalConditions)
 {
-    public Guid Id = id;
-    public Guid PersonId = personId;
-    public string AuthorUsername = authorUsername;
+    public Guid Id { get; }= id;
+    public Guid PersonId { get; }= personId;
+    public string AuthorUsername { get; }= authorUsername;
 
-    public string Appearance = appearance;
-    public string Personality = personality;
-    public string MedicalConditions = medicalConditions;
+    public string Appearance { get; }= appearance;
+    public string Personality { get; }= personality;
+    public string MedicalConditions { get; }= medicalConditions;
 }

@@ -5,14 +5,14 @@ namespace Detective.Dtos.Converters;
 
 public static class PropertyDtoConverter
 {
-    public static PropertyDto ToDto(this Property property)
+    public static PropertyDto ToDto(this PersonProperty personProperty)
     {
         return new PropertyDto
         {
-            Id = property.Id,
-            PersonId = property.PersonId,
-            Type = property.Type,
-            Cost = property.Cost
+            Id = personProperty.Id,
+            PersonId = personProperty.PersonId,
+            Type = personProperty.Type,
+            Cost = personProperty.Cost
         };
     }
 }
