@@ -79,7 +79,7 @@ jobs:
       - name: Run integration tests
         run: |
           cd src/Detective
-          dotnet test IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
+          dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
         if: always()
@@ -133,7 +133,7 @@ jobs:
       - name: Run E2E tests against real server
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 dotnet test E2ETests/E2ETests.csproj --no-build -o ../../build_output
+          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
         if: always()
@@ -201,9 +201,9 @@ jobs:
 
       - name: Run BDD / SpecFlow tests
         run: |
-          cd src/Detective/BDDTests
+          cd src/Detective
           TEST_BASE_URL=http://localhost:5000 SMTP_HOST=smtp4dev SMTP_PORT=25 SMTP_UI=http://localhost:8025 \
-          dotnet test BDDTests.csproj --no-build -o ../../build_output
+          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
         if: always()
