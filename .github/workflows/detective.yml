@@ -204,7 +204,6 @@ jobs:
       - name: Run BDD / SpecFlow tests
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 SMTP_HOST=smtp4dev SMTP_PORT=25 SMTP_UI=http://localhost:8025 \
           dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
