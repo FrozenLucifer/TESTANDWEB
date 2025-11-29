@@ -8,20 +8,28 @@ using Xunit;
 
 namespace TestBase.Repositories;
 
-public class UserRepositoryTests<TFixture>
+public class UserRepositoryTests<TFixture> : IAsyncLifetime
     where TFixture : DatabaseFixtureBase, new()
 {
-    private readonly Context _dbContext;
-    private readonly IUserRepository _userRepository;
+    private TFixture _fixture;
+    private Context _dbContext;
+    private IUserRepository _userRepository;
 
-    public UserRepositoryTests()
+
+    public async Task InitializeAsync()
     {
-        var fixture = new TFixture();
-        fixture.InitializeAsync().GetAwaiter().GetResult();
-        _dbContext = fixture.DbContext;
+        _fixture = new TFixture();
+        await _fixture.InitializeAsync();
+
+        _dbContext = _fixture.DbContext;
         _userRepository = new UserRepository(_dbContext);
 
         _dbContext.ChangeTracker.Clear();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _fixture.DisposeAsync();
     }
 
     [Fact]

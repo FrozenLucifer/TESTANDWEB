@@ -36,31 +36,21 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
         _db = _scope.ServiceProvider.GetRequiredService<Context>();
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         var username = "test_user";
         var passwordHash = new PasswordProvider().HashPassword("OldPassword123!");
         var user = new UserDb(username, passwordHash, "", UserType.Admin);
 
         _db.Users.Add(user);
-        _db.SaveChangesAsync();
-
-        return Task.CompletedTask;
+        await _db.SaveChangesAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
         _db.Users.RemoveRange(_db.Users);
-        _db.SaveChangesAsync();
-        return Task.CompletedTask;
+        await _db.SaveChangesAsync();
     }
-
-    // public void Dispose()
-    // {
-    //     _client.Dispose();
-    //     _scope.Dispose();
-    //     _factory.Dispose();
-    // }
 
     [Fact]
     public async Task AuthAndChangePassword_FullFlow_WorksCorrectly()

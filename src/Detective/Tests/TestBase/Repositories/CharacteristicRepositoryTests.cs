@@ -7,24 +7,32 @@ using Xunit;
 
 namespace TestBase.Repositories;
 
-public class CharacteristicRepositoryTests<TFixture>
+public class CharacteristicRepositoryTests<TFixture>: IAsyncLifetime
     where TFixture : DatabaseFixtureBase, new()
 {
-    private readonly Context _dbContext;
-    private readonly IPersonRepository _personRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly ICharacteristicRepository _characteristicRepository;
-
-    public CharacteristicRepositoryTests()
+    private TFixture _fixture;
+    private Context _dbContext;
+    private IPersonRepository _personRepository;
+    private IUserRepository _userRepository;
+    private ICharacteristicRepository _characteristicRepository;
+    
+    
+    public async Task InitializeAsync()
     {
-        var fixture = new TFixture();
-        fixture.InitializeAsync().GetAwaiter().GetResult();
-        _dbContext = fixture.DbContext;
+        _fixture = new TFixture();
+        await _fixture.InitializeAsync();
+
+        _dbContext = _fixture.DbContext;
         _personRepository = new PersonRepository(_dbContext);
         _userRepository = new UserRepository(_dbContext);
         _characteristicRepository = new CharacteristicRepository(_dbContext);
 
         _dbContext.ChangeTracker.Clear();
+    }
+    
+    public async Task DisposeAsync()
+    {
+        await _fixture.DisposeAsync();
     }
 
     [Fact]

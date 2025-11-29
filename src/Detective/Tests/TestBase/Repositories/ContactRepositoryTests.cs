@@ -7,22 +7,29 @@ using Xunit;
 
 namespace TestBase.Repositories;
 
-public class ContactRepositoryTests<TFixture>
+public class ContactRepositoryTests<TFixture> : IAsyncLifetime
     where TFixture : DatabaseFixtureBase, new()
 {
-    private readonly Context _dbContext;
-    private readonly IContactRepository _contactRepository;
-    private readonly IPersonRepository _personRepository;
+    private TFixture _fixture;
+    private Context _dbContext;
+    private IContactRepository _contactRepository;
+    private IPersonRepository _personRepository;
 
-    public ContactRepositoryTests()
+    public async Task InitializeAsync()
     {
-        var fixture = new TFixture();
-        fixture.InitializeAsync().GetAwaiter().GetResult();
-        _dbContext = fixture.DbContext;
+        _fixture = new TFixture();
+        await _fixture.InitializeAsync();
+
+        _dbContext = _fixture.DbContext;
         _personRepository = new PersonRepository(_dbContext);
         _contactRepository = new ContactRepository(_dbContext);
 
         _dbContext.ChangeTracker.Clear();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _fixture.DisposeAsync();
     }
 
     [Fact]
