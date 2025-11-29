@@ -32,7 +32,6 @@ jobs:
 
   # ===== Unit tests =====
   unit_tests:
-    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
@@ -58,8 +57,9 @@ jobs:
   integration_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    #    needs: unit_tests
     needs: build
+    env:
+      POSTGRES_HOST: postgres
     services:
       postgres:
         image: postgres:16
@@ -95,7 +95,7 @@ jobs:
   e2e_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: integration_tests
+    needs: build
     services:
       postgres:
         image: postgres:16
@@ -156,7 +156,7 @@ jobs:
   bdd_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: e2e_tests
+    needs: build
     services:
       postgres:
         image: postgres:16
