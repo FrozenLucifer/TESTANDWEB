@@ -13,8 +13,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
 {
     private TFixture _fixture;
     private Context _dbContext;
-    private IPersonRepository _personRepository;
-    private PersonFabric _personFabric;
+    private PersonRepository _personRepository;
     
     public async Task InitializeAsync()
     {
@@ -23,7 +22,6 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
 
         _dbContext = _fixture.DbContext;
         _personRepository = new PersonRepository(_dbContext);
-        _personFabric = new PersonFabric();
 
         _dbContext.ChangeTracker.Clear();
     }
@@ -36,7 +34,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
     [Fact]
     public async Task CreatePerson_ShouldThrow_WhenIdAlreadyExists()
     {
-        var person = _personFabric.CreatePerson1();
+        var person = PersonFabric.CreatePerson1();
         await _personRepository.CreatePerson(person.Id, person.Sex, person.FullName, person.BirthDate);
 
         await Assert.ThrowsAsync<PersonAlreadyExistsRepositoryException>(() =>
@@ -46,7 +44,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
     [Fact]
     public async Task CreatePerson_ShouldCreateSuccessfully()
     {
-        var person = _personFabric.CreatePerson2();
+        var person = PersonFabric.CreatePerson2();
         await _personRepository.CreatePerson(person.Id, person.Sex, person.FullName, person.BirthDate);
 
         var loaded = await _personRepository.GetPerson(person.Id);
@@ -59,7 +57,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
     [Fact]
     public async Task GetPerson_ShouldReturnPerson_WhenExists()
     {
-        var person = _personFabric.CreatePerson1();
+        var person = PersonFabric.CreatePerson1();
         await _personRepository.CreatePerson(person.Id, person.Sex, person.FullName, person.BirthDate);
 
         var loaded = await _personRepository.GetPerson(person.Id);
@@ -77,7 +75,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
     [Fact]
     public async Task UpdatePerson_ShouldUpdateSuccessfully()
     {
-        var person = _personFabric.CreatePerson1();
+        var person = PersonFabric.CreatePerson1();
         await _personRepository.CreatePerson(person.Id, person.Sex, person.FullName, person.BirthDate);
 
         await _personRepository.UpdatePerson(person.Id, Sex.Female, "Updated Name", new DateOnly(2000, 1, 1));
@@ -91,7 +89,7 @@ public class PersonRepositoryTests<TFixture>: IAsyncLifetime
     [Fact]
     public async Task DeletePerson_ShouldDeleteSuccessfully()
     {
-        var person = _personFabric.CreatePerson2();
+        var person = PersonFabric.CreatePerson2();
         await _personRepository.CreatePerson(person.Id, person.Sex, person.FullName, person.BirthDate);
 
         await _personRepository.DeletePerson(person.Id);
@@ -135,9 +133,9 @@ public class PersonBuilder
     public Person Build() => new Person(id: _id, sex: _sex, fullName: _fullName, birthDate: _birthDate);
 }
 
-public class PersonFabric
+public static class PersonFabric
 {
-    public Person CreatePerson1()
+    public static Person CreatePerson1()
     {
         var person = new PersonBuilder()
             .WithFullName("Male 1")
@@ -148,7 +146,7 @@ public class PersonFabric
         return person;
     }
 
-    public Person CreatePerson2()
+    public static Person CreatePerson2()
     {
         var person = new PersonBuilder()
             .WithFullName("Female 1")

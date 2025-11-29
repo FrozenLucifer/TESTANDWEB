@@ -51,12 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-unit
-          path: build_output/allure-results
-          
-      - name: Find allure-results
-        run: |
-          echo "Searching for allure-results directories:"
-          find . -type d -name "allure-results" || echo "No allure-results directories found"
+          path: src/Detective/Tests/UnitTests/allure-results
   
   # ===== Integration tests =====
   integration_tests:
@@ -104,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-integration
-          path: ../build_output/allure-results
+          path: build_output/allure-results
 
   # ===== E2E tests =====
   e2e_tests:
@@ -131,27 +126,22 @@ jobs:
         with:
           name: build_output
           path: build_output
-
+          
       - name: Start web app (Kestrel) in background
         run: |
           cd src/Detective/Server
-          
           dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
           echo "Waiting for web app to be ready..."
-          for i in {1..30}; do
-            if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
-              echo "Server is up"
-              break
-            fi
-            echo "Waiting... ($i)"  
+          until curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; do
+            echo -n "."
             sleep 2
           done
-          sleep 10
+          echo "Server is up"
 
       - name: Run E2E tests against real server
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
+          dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
         if: always()
