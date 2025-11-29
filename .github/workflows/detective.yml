@@ -32,7 +32,6 @@ jobs:
 
   # ===== Unit tests =====
   unit_tests:
-    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
@@ -56,7 +55,6 @@ jobs:
   
   # ===== Integration tests =====
   integration_tests:
-    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
@@ -95,7 +93,6 @@ jobs:
 
   # ===== E2E tests =====
   e2e_tests:
-    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
@@ -262,10 +259,16 @@ jobs:
         with:
           name: allure-results-e2e
           path: build_output/allure-results
+
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          path: build_output/allure-results
+          name: allure-results-bdd
       
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
-        uses: simple-elf/allure-report-action@v1.7
+        uses: simple-elf/allure-report-action@master
         if: always()
         with:
           gh_pages: ${{ env.ALLURE_HISTORY }}
