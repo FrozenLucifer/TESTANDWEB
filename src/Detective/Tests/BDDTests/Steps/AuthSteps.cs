@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using BDDTests.Hooks;
 using DataAccess;
 using DataAccess.Models;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Interfaces;
 using DTOs;
 using FluentAssertions;

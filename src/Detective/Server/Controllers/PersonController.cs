@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Detective.Dtos.Converters;
 using Detective.Extensions;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Interfaces.Service;
 using Domain.Models;
 using DTOs;

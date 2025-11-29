@@ -51,7 +51,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-unit
-          path: ../../build_output/allure-results
+          path: build_output/allure-results
+          
+      - name: Find allure-results
+        run: |
+          echo "Searching for allure-results directories:"
+          find . -type d -name "allure-results" || echo "No allure-results directories found"
   
   # ===== Integration tests =====
   integration_tests:

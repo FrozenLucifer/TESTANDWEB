@@ -1,4 +1,4 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services;
 using Domain.Interfaces.Repository;

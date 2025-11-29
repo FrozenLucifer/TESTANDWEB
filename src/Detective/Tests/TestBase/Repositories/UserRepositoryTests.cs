@@ -1,7 +1,7 @@
 ﻿using DataAccess;
 using DataAccess.Models;
 using DataAccess.Repository;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Xunit;

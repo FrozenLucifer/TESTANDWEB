@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using DataAccess;
 using DataAccess.Models;
 using Detective;
-using Domain.Enum;
+using Domain.Enums;
 using DTOs;
 using FluentAssertions;
 using Logic;

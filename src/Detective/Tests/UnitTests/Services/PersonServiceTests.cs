@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services;
 using Domain.Interfaces.Repository;
@@ -15,13 +15,13 @@ public class PersonServiceTests
 {
     public abstract class PersonServiceTestsBase
     {
-        protected readonly Mock<IPersonRepository> PersonRepositoryMock;
-        protected readonly Mock<IContactRepository> ContactRepositoryMock;
-        protected readonly Mock<IDocumentRepository> DocumentRepositoryMock;
-        protected readonly Mock<IPropertyRepository> PropertyRepositoryMock;
-        protected readonly Mock<IRelationshipRepository> RelationshipRepositoryMock;
-        protected readonly Mock<ICharacteristicRepository> CharacteristicRepositoryMock;
-        protected readonly PersonService PersonService;
+        protected Mock<IPersonRepository> PersonRepositoryMock { get; }
+        protected Mock<IContactRepository> ContactRepositoryMock{ get; }
+        protected Mock<IDocumentRepository> DocumentRepositoryMock{ get; }
+        protected Mock<IPropertyRepository> PropertyRepositoryMock{ get; }
+        protected Mock<IRelationshipRepository> RelationshipRepositoryMock{ get; }
+        protected Mock<ICharacteristicRepository> CharacteristicRepositoryMock{ get; }
+        protected PersonService PersonService { get; }
 
         protected PersonServiceTestsBase()
         {
@@ -676,7 +676,6 @@ public class PersonServiceTests
         public async Task WithValidPhone_ReturnsPersonId()
         {
             // Arrange
-            var expectedId = Guid.NewGuid();
             var person = new Person(Guid.NewGuid(), Sex.Male, "John Doe", new DateOnly(1990, 1, 1));
             ContactRepositoryMock.Setup(x => x.GetPersonByContact(It.IsAny<ContactType>(), It.IsAny<string>()))
                 .ReturnsAsync(person);

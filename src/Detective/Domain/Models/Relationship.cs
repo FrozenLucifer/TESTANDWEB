@@ -1,4 +1,4 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 
 namespace Domain.Models;
 
@@ -6,9 +6,9 @@ public class Relationship(Guid personId1,
     Guid personId2,
     RelationshipType type)
 {
-    public Guid PersonId1 = personId1;
-    public Guid PersonId2 = personId2;
-    public RelationshipType Type = type;
+    public Guid PersonId1 { get; } = personId1;
+    public Guid PersonId2 { get; } = personId2;
+    public RelationshipType Type { get; } = type;
 
     public Relationship Opposite()
     {
@@ -20,14 +20,14 @@ public class Relationship(Guid personId1,
         return $"({PersonId1})->({PersonId2})[{Type}]";
     }
 
-    public override bool Equals(object obj) => Equals(obj as Relationship);
+    public override bool Equals(object? obj) => Equals(obj as Relationship);
 
     public override int GetHashCode()
     {
         return HashCode.Combine(PersonId1, PersonId2, (int)Type);
     }
 
-    public bool Equals(Relationship? other)
+    private bool Equals(Relationship? other)
     {
         if (other is null) return false;
 

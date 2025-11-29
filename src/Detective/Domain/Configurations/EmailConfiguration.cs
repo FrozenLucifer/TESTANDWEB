@@ -3,8 +3,8 @@
 public class EmailConfiguration
 {
     public static readonly string ConfigurationSectionName = "EmailConfiguration";
-    public string SmtpServer { get; init; }
-    public int SmtpPort { get; init; }
-    public string Email { get; init; }
-    public string Password { get; init; }
+    public required string SmtpServer { get; init; }
+    public required int SmtpPort { get; init; }
+    public required string Email { get; init; }
+    public required string Password { get; init; }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using DataAccess;
 using DataAccess.Models;
-using Domain.Enum;
+using Domain.Enums;
 using Logic;
 
 namespace DatabasePopulator;

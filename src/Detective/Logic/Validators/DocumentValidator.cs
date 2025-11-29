@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 
