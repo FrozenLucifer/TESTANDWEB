@@ -45,13 +45,13 @@ jobs:
       - name: Run unit tests
         run: |
           cd src/Detective
-          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../../build_output
+          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-unit
-          path: build_output/allure-results
+          path: ../../build_output/allure-results
   
   # ===== Integration tests =====
   integration_tests:
@@ -82,14 +82,24 @@ jobs:
       - name: Run integration tests
         run: |
           cd src/Detective
-          dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../../build_output
+          dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
 
+      - name: List directories src/Detective
+        run: |
+          cd src/Detective
+          echo "Directory tree src/Detective:"
+          tree -L 3 || ls -R
+
+      - name: List directories
+        run: |
+          echo "Directory tree:"
+          tree -L 3 || ls -R
       - name: Upload allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-integration
-          path: build_output/allure-results
+          path: ../build_output/allure-results
 
   # ===== E2E tests =====
   e2e_tests:
@@ -136,7 +146,7 @@ jobs:
       - name: Run E2E tests against real server
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../../build_output
+          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
         if: always()
@@ -201,7 +211,7 @@ jobs:
       - name: Run BDD / SpecFlow tests
         run: |
           cd src/Detective
-          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../../build_output
+          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../build_output
 
       - name: Print server logs
         if: always()
