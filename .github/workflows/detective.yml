@@ -64,7 +64,6 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_HOST: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1
           POSTGRES_DB: detective_test
