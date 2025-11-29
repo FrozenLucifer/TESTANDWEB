@@ -25,7 +25,7 @@ jobs:
           dotnet build src/Detective/Detective.sln -c Release -o build_output
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build_output
           path: build_output
@@ -36,7 +36,7 @@ jobs:
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v6
         with:
           name: build_output
@@ -55,10 +55,10 @@ jobs:
           find . -type d -name "allure-results" -print
 
       - name: Upload allure results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-unit
-          path: src/Detective/Tests/UnitTests/allure-results
+          path: build_output/allure-results
 
       - name: Debug list files
         run: |
@@ -98,7 +98,7 @@ jobs:
         options: --pull always
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v6
         with:
           name: build_output
@@ -121,7 +121,7 @@ jobs:
           tree -L 3 || ls -R
       - name: Upload allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-integration
           path: build_output/allure-results
@@ -146,7 +146,7 @@ jobs:
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=postgres;Password=1;Database=detective_test
       ASPNETCORE_ENVIRONMENT: Test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v6
         with:
           name: build_output
@@ -177,7 +177,7 @@ jobs:
 
       - name: Upload allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-e2e
           path: build_output/allure-results
@@ -211,7 +211,7 @@ jobs:
       SMTP_UI: http://smtp4dev:80
       ASPNETCORE_ENVIRONMENT: Test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v6
         with:
           name: build_output
@@ -242,7 +242,7 @@ jobs:
 
       - name: Upload allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-bdd
           path: build_output/allure-results
@@ -259,11 +259,11 @@ jobs:
       RUN_DIR: build_output/allure-results
       ALLURE_REPORT_DIR: allure-report
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       # ---------- Load test report history ----------
       - name: Load test report history
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         if: always()
         continue-on-error: true
         with:
