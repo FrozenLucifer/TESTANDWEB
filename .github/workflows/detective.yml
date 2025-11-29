@@ -66,6 +66,12 @@ jobs:
           find . -maxdepth 4 -type d -name "allure-results" -print
           echo "--- FULL TREE ---"
           find . | head -n 1000
+            - name: Debug list files
+          
+      - name: Debug list files 2
+        run: |
+          echo "--- FULL TREE ---"
+          find .. | head
           
       - name: Debug check UnitTests folder
         run: |
