@@ -58,7 +58,7 @@ jobs:
   integration_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-#    needs: unit_tests
+    #    needs: unit_tests
     needs: build
     services:
       postgres:
@@ -192,15 +192,11 @@ jobs:
           cd src/Detective/Server
           dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
           echo "Waiting for web app to be ready..."
-          for i in {1..30}; do
-            if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
-              echo "Server is up"
-              break
-            fi
-            echo "Waiting... ($i)"  
+          until curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; do
+            echo -n "."
             sleep 2
           done
-          sleep 10
+          echo "Server is up"
 
       - name: Run BDD / SpecFlow tests
         run: |
