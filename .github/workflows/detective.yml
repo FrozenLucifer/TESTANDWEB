@@ -67,7 +67,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1
           POSTGRES_DB: detective_test
-          POSTGRES_MAX_CONNECTIONS: 200
+          POSTGRES_INITDB_ARGS: "-c max_connections=1500"
         ports:
           - 5432:5432
         options: --pull always
