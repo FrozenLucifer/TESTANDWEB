@@ -57,7 +57,7 @@ jobs:
   integration_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: build
+    needs: unit_tests
     env:
       POSTGRES_HOST: postgres
     services:
@@ -95,7 +95,7 @@ jobs:
   e2e_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: build
+    needs: integration_tests
     services:
       postgres:
         image: postgres:16
@@ -151,7 +151,7 @@ jobs:
   bdd_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: build
+    needs: e2e_tests
     services:
       postgres:
         image: postgres:16
