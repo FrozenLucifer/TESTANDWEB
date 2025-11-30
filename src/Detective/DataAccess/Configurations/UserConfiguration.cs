@@ -9,6 +9,8 @@ public class UserConfiguration : IEntityTypeConfiguration<UserDb>
     public void Configure(EntityTypeBuilder<UserDb> builder)
     {
         builder.HasKey(a => a.Username);
+        
+        builder.HasAlternateKey(a=>a.Email);
 
         builder.Property(a => a.Password).IsRequired();
 

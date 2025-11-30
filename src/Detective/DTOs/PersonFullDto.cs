@@ -8,20 +8,19 @@ public class PersonFullDto
     public SexDto? Sex { get; set; }
     public string? FullName { get; set; }
     public DateOnly? BirthDate { get; set; }
-    public List<ContactDto> Contacts { get; set; }
-    public List<DocumentDto> Documents { get; set; }
-    public List<PropertyDto> Properties { get; set; }
-    public List<CharacteristicDto> Characteristics { get; set; }
+    public IReadOnlyCollection<ContactDto> Contacts { get; set; }
+    public IReadOnlyCollection<DocumentDto> Documents { get; set; }
+    public IReadOnlyCollection<PropertyDto> Properties { get; set; }
+    public IReadOnlyCollection<CharacteristicDto> Characteristics { get; set; }
 
-    public PersonFullDto(
-        Guid id,
+    public PersonFullDto(Guid id,
         SexDto? sex,
         string? fullName,
         DateOnly? birthDate,
-        List<ContactDto> contacts,
-        List<DocumentDto> documents,
-        List<PropertyDto> properties,
-        List<CharacteristicDto> characteristics)
+        IReadOnlyCollection<ContactDto> contacts,
+        IReadOnlyCollection<DocumentDto> documents,
+        IReadOnlyCollection<PropertyDto> properties,
+        IReadOnlyCollection<CharacteristicDto> characteristics)
     {
         Id = id;
         Sex = sex;

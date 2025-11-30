@@ -1,6 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.Converters;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;
@@ -54,7 +54,7 @@ public class DocumentRepository : IDocumentRepository
 
     public async Task DeleteDocument(Guid id)
     {
-        var documentDb = await _context.Documents.FirstOrDefaultAsync(d=> d.Id == id);
+        var documentDb = await _context.Documents.FirstOrDefaultAsync(d => d.Id == id);
         if (documentDb is null)
             throw new DocumentNotFoundRepositoryException(id);
 

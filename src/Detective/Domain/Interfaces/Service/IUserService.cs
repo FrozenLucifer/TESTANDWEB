@@ -1,5 +1,4 @@
-﻿using Domain.Enum;
-using Domain.Exceptions;
+﻿using Domain.Enums;
 using Domain.Exceptions.Services;
 using Domain.Models;
 
@@ -15,7 +14,7 @@ public interface IUserService
     /// <returns>Сгенерированный пароль пользователя</returns>
     /// <exception cref="UserAlreadyExistsException">Пользователь с таким логином уже существует</exception>
     public Task<string> CreateUser(string username, UserType userType);
-    
+
     /// <summary>
     /// Сбросить пароль пользователя
     /// </summary>

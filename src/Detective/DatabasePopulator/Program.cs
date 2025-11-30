@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using DataAccess;
 using DataAccess.Models;
-using Domain.Enum;
+using Domain.Enums;
 using Logic;
 
 namespace DatabasePopulator;
@@ -33,13 +33,15 @@ class Program
 
     private static async Task SeedDataPresetAsync(Context context)
     {
-        var hasher = new PasswordHasher();
+        // var hasher = new PasswordHasher();
+        // var hasher = new PasswordHasher();
         
         foreach (UserType userType in Enum.GetValues(typeof(UserType)))
         {
             var username = userType.ToString();
-            var passwordHash = hasher.HashPassword(username);
-            var user = new UserDb(username, passwordHash, userType);
+            // var passwordHash = hasher.HashPassword(username);
+            var passwordHash = "";
+            var user = new UserDb(username, passwordHash, "", userType);
             await context.Users.AddAsync(user);
         }
         

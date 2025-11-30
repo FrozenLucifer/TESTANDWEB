@@ -1,7 +1,7 @@
 ﻿using DataAccess;
 using DataAccess.Models;
 using DataAccess.Repository;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Xunit;
@@ -28,7 +28,7 @@ public class UserRepositoryTests<TFixture>
     public async Task CreateUser_ShouldCreateSuccessfully()
     {
         // Act
-        await _userRepository.CreateUser("user1", "pass1", UserType.Admin);
+        await _userRepository.CreateUser("user1", "pass1", "", UserType.Admin);
         
         // Assert
         var loaded = await _userRepository.GetUser("user1");
@@ -47,7 +47,7 @@ public class UserRepositoryTests<TFixture>
         _dbContext.Users.Add(user);
 
         await Assert.ThrowsAsync<UserAlreadyExistsRepositoryException>(() =>
-            _userRepository.CreateUser("user2", "pass2", UserType.Admin));
+            _userRepository.CreateUser("user2", "pass2", "", UserType.Admin));
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class UserBuilder
 
     public UserDb Build()
     {
-        var user = new UserDb(username: _username, password: _password, type: _type);
+        var user = new UserDb(username: _username, password: _password, type: _type, email: "");
 
         return user;
     }

@@ -26,16 +26,18 @@ public class Startup
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{configuration["environment"]}.json", true, true)
+                .AddEnvironmentVariables();
+
             configuration = builder.Build();
-            
+
             Configuration = configuration;
-            
+
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
-            
+
             Log.Information("Application starting up...");
             Log.Debug("Application starting up...");
         }
@@ -52,26 +54,28 @@ public class Startup
         {
             Log.Information("Configuring services...");
             services.AddSerilog();
-            
+
             services.AddContext(Configuration.GetConnectionString("DefaultConnection"));
             services.AddScopedRepositories();
             services.ApplyMigrations();
 
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IPasswordProvider, PasswordProvider>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddOptions<JwtConfiguration>().Bind(Configuration.GetSection(JwtConfiguration.ConfigurationSectionName));
-            
+            services.AddOptions<EmailConfiguration>().Bind(Configuration.GetSection(EmailConfiguration.ConfigurationSectionName));
+
             services.AddControllers()
                 .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
             services.AddAuthentication(Configuration);
 
             services.AddSwaggerGen();
-            
+
             Log.Information("Services configured successfully");
         }
         catch (Exception ex)
@@ -81,12 +85,12 @@ public class Startup
         }
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         try
         {
             Log.Information("Configuring application...");
-            
+
             app.UseMiddleware<ExceptionMiddleware>();
 
             if (env.IsDevelopment())
@@ -96,14 +100,17 @@ public class Startup
 
             app.UseRouting();
 
-            app.UseAuthentication();    
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Detective API V1"); });
-            
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Detective API V1");
+            });
+
             Log.Information("Application configured successfully");
         }
         catch (Exception ex)

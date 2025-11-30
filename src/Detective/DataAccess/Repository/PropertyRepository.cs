@@ -1,6 +1,5 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.Converters;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;
@@ -38,7 +37,7 @@ public class PropertyRepository : IPropertyRepository
         }
     }
 
-    public async Task<List<Property>> GetPersonProperties(Guid personId)
+    public async Task<List<PersonProperty>> GetPersonProperties(Guid personId)
     {
         var personDb = await _context.Persons
             .Include(p => p.Properties)
@@ -59,7 +58,7 @@ public class PropertyRepository : IPropertyRepository
             throw new PropertyNotFoundRepositoryException(id);
 
         _context.Properties.Remove(personDb);
-        
+
         await _context.SaveChangesAsync();
     }
 }

@@ -6,14 +6,10 @@
         <Nullable>enable</Nullable>
 
         <PackageId>PPO.Detective.DTOs</PackageId>
-        <VersionPrefix>1.0.4.1</VersionPrefix>
+        <VersionPrefix>1.1.0.1</VersionPrefix>
         <VersionSuffix>$(VersionSuffix)</VersionSuffix>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
     
 
     <Target Name="SetVersion" BeforeTargets="GenerateNuspec">

@@ -10,11 +10,11 @@ public static class FluentValidationExtensions
         if (!validationResult.IsValid)
         {
             throw new ValidationException(
-                string.Join(Environment.NewLine, 
+                string.Join(Environment.NewLine,
                     validationResult.Errors.Select(e => e.ErrorMessage)));
         }
     }
-    
+
     public static string GetErrorMessages(this ValidationResult validationResult)
     {
         if (validationResult.IsValid)
@@ -22,7 +22,7 @@ public static class FluentValidationExtensions
             return string.Empty;
         }
 
-        return string.Join(Environment.NewLine, 
+        return string.Join(Environment.NewLine,
             validationResult.Errors.Select(e => e.ErrorMessage));
     }
 }

@@ -74,17 +74,13 @@ public class ExceptionMiddleware
                 break;
         }
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse)).ConfigureAwait(true);
     }
 }
 
 public class ErrorResponse
 {
     public string Message { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? StackTrace { get; set; }
-
 
     public ErrorResponse(Exception ex)
     {

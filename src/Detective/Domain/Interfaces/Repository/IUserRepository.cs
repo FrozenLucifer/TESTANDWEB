@@ -1,6 +1,5 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 using Domain.Models;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services;
 
@@ -15,7 +14,7 @@ public interface IUserRepository
     /// <param name="password">Пароль пользователя (хэш)</param>
     /// <param name="type">Тип пользователя (<see cref="UserType"/>)</param>
     /// <exception cref="UserAlreadyExistsException">Пользователь с таким логином уже существует</exception>
-    public Task CreateUser(string login, string password, UserType type);
+    public Task CreateUser(string login, string password, string email, UserType type);
 
     /// <summary>
     /// Получить пользователя по логину
@@ -39,6 +38,6 @@ public interface IUserRepository
     /// <param name="login">Логин пользователя</param>
     /// <exception cref="UserNotFoundException">Пользователя с таким логином не существует</exception>
     public Task DeleteUser(string login);
-    
+
     public Task<List<User>> GetUsers();
 }

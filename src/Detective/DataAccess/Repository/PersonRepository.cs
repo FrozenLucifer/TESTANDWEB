@@ -1,6 +1,7 @@
-﻿using DataAccess.Models;
+﻿using System.Globalization;
+using DataAccess.Models;
 using DataAccess.Models.Converters;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;
@@ -62,7 +63,7 @@ public class PersonRepository : IPersonRepository
         if (!string.IsNullOrWhiteSpace(fullName))
         {
             var searchTerms = fullName
-                .ToLower()
+                .ToLower(CultureInfo.CurrentCulture)
                 .Split([' '], StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var term in searchTerms)
@@ -79,7 +80,7 @@ public class PersonRepository : IPersonRepository
 
         if (limit is > 0)
             query = query.Take(limit.Value);
-        
+
         if (skip is > 0)
             query = query.Skip(skip.Value);
 

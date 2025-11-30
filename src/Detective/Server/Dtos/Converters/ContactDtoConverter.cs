@@ -1,4 +1,4 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 using Domain.Models;
 using DTOs;
 using DTOs.Enum;
@@ -19,6 +19,7 @@ public static class ContactDtoConverter
     }
 }
 
+
 public static class ContactTypeConverter
 {
     public static ContactType ToDomain(this ContactTypeDto dtoType)
@@ -30,8 +31,6 @@ public static class ContactTypeConverter
     {
         return (ContactTypeDto)Enum.Parse(typeof(ContactTypeDto), domainType.ToString());
     }
-
-
 }
 
 public static class SexConverter

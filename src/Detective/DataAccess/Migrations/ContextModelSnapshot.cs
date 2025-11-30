@@ -17,7 +17,7 @@ namespace DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -172,9 +172,33 @@ namespace DataAccess.Migrations
                     b.ToTable("Relationships");
                 });
 
+            modelBuilder.Entity("DataAccess.Models.TwoFactorCodeDb", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("TwoFactorCodes");
+                });
+
             modelBuilder.Entity("DataAccess.Models.UserDb", b =>
                 {
                     b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
@@ -186,6 +210,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Username");
+
+                    b.HasAlternateKey("Email");
 
                     b.ToTable("Users");
                 });

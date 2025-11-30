@@ -10,7 +10,7 @@ public class RelationshipConfiguration : IEntityTypeConfiguration<RelationshipDb
     {
         builder.Property(a => a.Person1Id).IsRequired();
         builder.Property(a => a.Person2Id).IsRequired();
-        
+
         builder.HasKey(a => new { a.Person1Id, a.Person2Id });
 
         builder.Property(a => a.Type).IsRequired().HasConversion<string>();

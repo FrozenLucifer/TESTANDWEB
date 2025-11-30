@@ -1,6 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.Converters;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;
@@ -69,7 +69,7 @@ public class ContactRepository : IContactRepository
 
     public async Task<Person> GetPersonByContact(ContactType contactType, string info)
     {
-        var contactDb = await _context.Contacts.Include(c=>c.Person).FirstOrDefaultAsync(c => c.Type == contactType && c.Info == info);
+        var contactDb = await _context.Contacts.Include(c => c.Person).FirstOrDefaultAsync(c => c.Type == contactType && c.Info == info);
 
         if (contactDb is null)
             throw new PersonNotFoundRepositoryException();

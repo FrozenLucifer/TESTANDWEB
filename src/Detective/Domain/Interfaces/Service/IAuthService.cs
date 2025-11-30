@@ -1,5 +1,4 @@
-﻿using Domain.Exceptions;
-using Domain.Exceptions.Services.Auth;
+﻿using Domain.Exceptions.Services.Auth;
 
 
 namespace Domain.Interfaces.Service;
@@ -26,4 +25,8 @@ public interface IAuthService
     /// <exception cref="WrongPasswordAuthException">Неправильный пароль</exception>
     /// <exception cref="BadPasswordAuthException">Плохой пароль</exception>
     public Task ChangePassword(string username, string oldPassword, string newPassword);
+    
+    Task TwoFactorLogin(string username, string password);
+
+    Task<string> TwoFactorConfirm(string username, string code);
 }

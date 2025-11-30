@@ -1,4 +1,4 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 using FluentValidation;
 using FluentValidation.Validators;
 

@@ -1,7 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Models.Converters;
-using Domain.Enum;
-using Domain.Exceptions;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Domain.Models;
@@ -18,11 +17,11 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task CreateUser(string login, string password, UserType type)
+    public async Task CreateUser(string login, string password, string email, UserType type)
     {
         try
         {
-            var userDb = new UserDb(login, password, type);
+            var userDb = new UserDb(login, password, email, type);
 
             _context.Users.Add(userDb);
 

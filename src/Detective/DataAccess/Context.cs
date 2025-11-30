@@ -12,8 +12,9 @@ public class Context : DbContext
     public DbSet<PropertyDb> Properties { get; set; }
     public DbSet<RelationshipDb> Relationships { get; set; }
     public DbSet<UserDb> Users { get; set; }
-    
+
     public DbSet<CharacteristicDb> Characteristics { get; set; }
+    public DbSet<TwoFactorCodeDb> TwoFactorCodes { get; set; }
 
     public Context()
     {
@@ -36,5 +37,6 @@ public class Context : DbContext
         modelBuilder.ApplyConfiguration(new PropertyConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new CharacteristicConfiguration());
+        modelBuilder.ApplyConfiguration(new TwoFactorCodeConfiguration());
     }
 }

@@ -1,6 +1,4 @@
-﻿using Domain.Enum;
-
-namespace DataAccess.Models;
+﻿namespace DataAccess.Models;
 
 public class CharacteristicDb(Guid id,
     Guid personId,

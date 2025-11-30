@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Detective.Dtos;
 using Detective.Dtos.Converters;
 using Detective.Extensions;
-using Domain.Enum;
 using Domain.Interfaces.Service;
 using DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +33,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = Policies.Admin)]
     public async Task<ActionResult<string>> CreateUser(CreateUserDto createUserDto)
     {
-        var tmpPassword = await _userService.CreateUser(createUserDto.username, createUserDto.type);
+        var tmpPassword = await _userService.CreateUser(createUserDto.username, createUserDto.type.ToDomain());
         return Ok(tmpPassword);
     }
 
@@ -70,7 +68,7 @@ public class UsersController : ControllerBase
         return Ok(newPassword);
     }
 
-    
+
     /// <summary>
     /// Получить пользователей
     /// </summary>

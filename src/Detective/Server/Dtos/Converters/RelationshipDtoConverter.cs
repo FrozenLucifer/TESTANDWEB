@@ -11,7 +11,7 @@ public static class RelationshipDtoConverter
         {
             Person1Id = relationship.PersonId1,
             Person2Id = relationship.PersonId2,
-            Type = relationship.Type.ToDto()
+            Type = relationship.Type.ToDto(),
         };
     }
 }

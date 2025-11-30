@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Domain.Configurations;
-using Domain.Enum;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,5 @@
-﻿using Domain.Enum;
-using Domain.Exceptions;
+﻿using System.Security.Cryptography;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services;
 using Domain.Interfaces;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Logic.Services;
 
 public class UserService(IUserRepository userRepository,
-    IPasswordHasher passwordHasher,
+    IPasswordProvider passwordProvider,
     ILogger<UserService> logger) : IUserService
 {
     public async Task<string> CreateUser(string username, UserType userType)
@@ -20,9 +20,9 @@ public class UserService(IUserRepository userRepository,
         {
             logger.LogInformation("Creating new user with username: {Username}", username);
 
-            var password = GenerateTemporaryPassword();
-            var passwordHash = passwordHasher.HashPassword(password);
-            await userRepository.CreateUser(username, passwordHash, userType);
+            var password = passwordProvider.GenerateTemporaryPassword();
+            var passwordHash = passwordProvider.HashPassword(password);
+            await userRepository.CreateUser(username, passwordHash, "tmp@tmp.tmp", userType); //TODO
 
             logger.LogInformation("User {Username} created successfully", username);
             return password;
@@ -45,8 +45,8 @@ public class UserService(IUserRepository userRepository,
         {
             logger.LogInformation("Resetting password for user: {Username}", username);
 
-            var password = GenerateTemporaryPassword();
-            var passwordHash = passwordHasher.HashPassword(password);
+            var password = passwordProvider.GenerateTemporaryPassword();
+            var passwordHash = passwordProvider.HashPassword(password);
             await userRepository.ChangePassword(username, passwordHash);
 
             logger.LogInformation("Password reset for user {Username} completed", username);
@@ -90,19 +90,5 @@ public class UserService(IUserRepository userRepository,
     {
         var users = await userRepository.GetUsers();
         return users;
-    }
-
-    private string GenerateTemporaryPassword()
-    {
-        const string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        var chars = new char[12];
-
-        for (var i = 0; i < chars.Length; i++)
-        {
-            chars[i] = validChars[random.Next(validChars.Length)];
-        }
-
-        return new string(chars);
     }
 }

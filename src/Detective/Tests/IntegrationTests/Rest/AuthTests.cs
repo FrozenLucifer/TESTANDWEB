@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using DataAccess;
 using DataAccess.Models;
 using Detective;
-using Domain.Enum;
+using Domain.Enums;
 using DTOs;
 using FluentAssertions;
 using Logic;
@@ -40,8 +40,9 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
     public Task InitializeAsync()
     {
         var username = "test_user";
-        var passwordHash = new PasswordHasher().HashPassword("OldPassword123!");
-        var user = new UserDb(username, passwordHash, UserType.Admin);
+        // var passwordHash = new PasswordHasher.HashPassword("OldPassword123!");
+        var passwordHash = "";
+        var user = new UserDb(username, passwordHash, "", UserType.Admin);
 
         _db.Users.Add(user);
         _db.SaveChanges();

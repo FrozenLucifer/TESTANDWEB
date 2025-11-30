@@ -1,0 +1,4 @@
+﻿GET http://localhost:5000/
+
+###
+GET http://localhost/api/v1/health/

@@ -1,11 +1,11 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 
 namespace Domain.Models;
 
 public class Document(Guid id, Guid personId, DocumentType type, string payload)
 {
-    public Guid Id = id;
-    public Guid PersonId = personId;
-    public DocumentType Type = type;
-    public string Payload = payload;
+    public Guid Id { get; }= id;
+    public Guid PersonId { get; }= personId;
+    public DocumentType Type { get; }= type;
+    public string Payload { get; }= payload;
 }

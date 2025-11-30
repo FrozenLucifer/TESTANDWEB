@@ -1,5 +1,4 @@
-﻿using Domain.Enum;
-using Domain.Exceptions;
+﻿using Domain.Enums;
 using Domain.Exceptions.Services;
 using Domain.Models;
 
@@ -15,6 +14,7 @@ public interface IPersonService
     /// <param name="maxBirthDate">Минимальная граница дня рождения</param>
     /// <param name="minBirthDate">Максимальная граница дня рождения</param>
     /// <param name="limit">Максимальное количество возвращаемых людей</param>
+    /// <param name="skip">Количество пропускаемых сущностей</param>
     /// <returns>Список людей, соответствующих критериям поиска</returns>
     public Task<List<Person>> GetPersons(Sex? sex, string? fullName, DateOnly? minBirthDate, DateOnly? maxBirthDate, int? limit = null, int? skip = null);
 
@@ -60,7 +60,7 @@ public interface IPersonService
     /// <param name="allowedTypes">Разрешенные типы связей(<see cref="RelationshipFilter"/>)</param>
     /// <returns>Список связей пользователя</returns>
     /// <exception cref="PersonNotFoundException">Пользователь с таким id не существует</exception>
-    public Task<List<Relationship>> GetPersonRelationships(Guid personId, uint depth = 1, List<RelationshipType>? allowedTypes = null);
+    public Task<List<Relationship>> GetPersonRelationships(Guid personId, uint depth = 1, IReadOnlyCollection<RelationshipType>? allowedTypes = null);
 
     /// <summary>
     /// Установить связь между людьми
@@ -71,7 +71,7 @@ public interface IPersonService
     /// <exception cref="PersonNotFoundException">Один из пользователей с указанными id не существует</exception>
     public Task SetPersonsRelationship(Guid id1, Guid id2, RelationshipType type);
 
-    
+
     /// <summary>
     /// Удалить связь между людьми
     /// </summary>

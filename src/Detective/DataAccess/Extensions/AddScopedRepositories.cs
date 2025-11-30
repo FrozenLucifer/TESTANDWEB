@@ -17,6 +17,7 @@ public static class RepositoriesExtension
         services.AddScoped<IPropertyRepository, PropertyRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
+        services.AddScoped<ITwoFactorRepository, TwoFactorRepository>();
     }
 
     public static void AddContext(this IServiceCollection services, string? connectionString)

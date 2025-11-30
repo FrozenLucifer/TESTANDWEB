@@ -1,8 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Domain.Configurations;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 using Domain.Exceptions.Services.Auth;
 using Domain.Interfaces;
@@ -17,7 +18,9 @@ using Microsoft.IdentityModel.Tokens;
 namespace Logic.Services;
 
 public class AuthService(IUserRepository userRepository,
-    IPasswordHasher passwordHasher,
+    IPasswordProvider passwordProvider,
+    ITwoFactorRepository twoFactorRepository,
+    IEmailService emailService,
     IOptions<JwtConfiguration> jwtOptions,
     ILogger<AuthService> logger) : IAuthService
 {
@@ -38,20 +41,15 @@ public class AuthService(IUserRepository userRepository,
 
             return token;
         }
-        catch (UserNotFoundRepositoryException)
+        catch (UserNotFoundRepositoryException ex)
         {
-            logger.LogWarning("User not found with username: {Username}", username);
+            logger.LogWarning(ex, "User not found with username: {Username}", username);
             throw new UserNotFoundAuthException();
         }
-        catch (WrongPasswordAuthException)
+        catch (WrongPasswordAuthException ex)
         {
-            logger.LogWarning("Wrong password for user {Username}", username);
+            logger.LogWarning(ex, "Wrong password for user {Username}", username);
             throw new WrongPasswordAuthException();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unexpected error");
-            throw;
         }
     }
 
@@ -74,32 +72,111 @@ public class AuthService(IUserRepository userRepository,
             await VerifyUserPassword(username, oldPassword);
             logger.LogDebug("Old password verified for user {Username}", username);
 
-            var newPasswordHash = passwordHasher.HashPassword(newPassword);
+            var newPasswordHash = passwordProvider.HashPassword(newPassword);
             await userRepository.ChangePassword(username, newPasswordHash);
 
             logger.LogInformation("Password changed successfully for user {Username}", username);
         }
-        catch (UserNotFoundRepositoryException)
+        catch (UserNotFoundRepositoryException ex)
         {
-            logger.LogWarning("User not found: {Username}", username);
+            logger.LogWarning(ex, "User not found: {Username}", username);
             throw new UserNotFoundAuthException();
         }
-        catch (WrongPasswordAuthException)
+        catch (WrongPasswordAuthException ex)
         {
-            logger.LogWarning("Wrong old password for user {Username}", username);
+            logger.LogWarning(ex, "Wrong old password for user {Username}", username);
             throw new WrongPasswordAuthException();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unexpected error");
-            throw;
         }
     }
 
+    public async Task TwoFactorLogin(string username, string password)
+    {
+        logger.LogInformation("2FA login attempt for user: {Username}", username);
+
+        var user = await VerifyUserPassword(username, password);
+
+        var code = RandomNumberGenerator.GetInt32(100000, 999999).ToString(CultureInfo.CurrentCulture);
+
+        await twoFactorRepository.CreateCode(username, code);
+
+        await emailService.SendAsync(
+            user.Email,
+            "Код подтверждения входа",
+            $"Ваш код: {code}"
+        );
+
+        logger.LogInformation("2FA code sent to user: {Username}", username);
+    }
+
+    public async Task<string> TwoFactorConfirm(string username, string code)
+    {
+        logger.LogInformation("2FA confirm attempt for userId: {Username}", username);
+
+        var storedCode = await twoFactorRepository.FindOrDefaultCode(username);
+
+        if (storedCode == null)
+        {
+            logger.LogWarning("No 2FA code found for {Username}", username);
+            throw new Wrong2FaCodeAuthException();
+        }
+
+        if (storedCode.FailedAttempts >= 3)
+        {
+            logger.LogWarning("User blocked {Username}", username);
+            throw new Wrong2FaCodeAuthException();
+        }
+
+        if (storedCode.Code != code || storedCode.ExpiresAt < DateTime.UtcNow)
+        {
+            logger.LogWarning("Invalid or expired 2FA code for {Username}", username);
+
+            storedCode.FailedAttempts++;
+            
+            await twoFactorRepository.UpdateFailedAttempts(username, storedCode.FailedAttempts);
+
+            if (storedCode.FailedAttempts >= 3)
+            {
+                logger.LogWarning("Changing password for {Username}", username);
+                var newPassword = passwordProvider.GenerateTemporaryPassword();
+                var newPasswordHash = passwordProvider.HashPassword(newPassword);
+                await userRepository.ChangePassword(username, newPasswordHash);
+
+                var user1 = await userRepository.GetUser(username);
+
+                await emailService.SendAsync(
+                    user1.Email,
+                    "Новый пароль",
+                    $"В связи с подозрительной активностью, высылаем вам новый пароль: {newPassword}"
+                );
+            }
+
+            throw new Wrong2FaCodeAuthException();
+        }
+
+        var user = await userRepository.GetUser(username);
+
+        await twoFactorRepository.DeleteCode(username);
+
+        var token = GenerateJwtToken(user);
+
+        logger.LogInformation("2FA confirmed, token issued for {Username}", username);
+
+        return token;
+    }
+    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    /// <exception cref="WrongPasswordAuthException"></exception>
+    /// <exception cref="UserNotFoundRepositoryException"></exception>
     private async Task<User> VerifyUserPassword(string username, string password)
     {
         var user = await userRepository.GetUser(username);
-        if (!passwordHasher.VerifyPassword(user.Password, password))
+        if (!passwordProvider.VerifyPassword(user.Password, password))
             throw new WrongPasswordAuthException();
 
         return user;

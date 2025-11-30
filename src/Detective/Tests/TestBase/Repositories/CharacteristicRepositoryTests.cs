@@ -1,6 +1,6 @@
 ﻿using DataAccess;
 using DataAccess.Repository;
-using Domain.Enum;
+using Domain.Enums;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Xunit;
@@ -33,7 +33,7 @@ public class CharacteristicRepositoryTests<TFixture>
         var personId = Guid.NewGuid();
         var characteristicId = Guid.NewGuid();
         await _personRepository.CreatePerson(personId, null, null, null);
-        await _userRepository.CreateUser("user1", "", UserType.Admin);
+        await _userRepository.CreateUser("user1", "", "", UserType.Admin);
 
         await _characteristicRepository.CreateCharacteristic(
             characteristicId, personId, "user1", "tall", "friendly", "none");
@@ -66,7 +66,7 @@ public class CharacteristicRepositoryTests<TFixture>
         var personId = Guid.NewGuid();
         var characteristicId = Guid.NewGuid();
         await _personRepository.CreatePerson(personId, null, null, null);
-        await _userRepository.CreateUser("user2", "", UserType.Admin);
+        await _userRepository.CreateUser("user2", "", "", UserType.Admin);
 
         await _characteristicRepository.CreateCharacteristic(
             characteristicId, personId, "user2", "short", "shy", "asthma");
@@ -100,7 +100,7 @@ public class CharacteristicRepositoryTests<TFixture>
         var personId = Guid.NewGuid();
         var characteristicId = Guid.NewGuid();
         await _personRepository.CreatePerson(personId, null, null, null);
-        await _userRepository.CreateUser("user3", "", UserType.Admin);
+        await _userRepository.CreateUser("user3", "", "", UserType.Admin);
 
         await _characteristicRepository.CreateCharacteristic(
             characteristicId, personId, "user3", "average", "calm", "none");

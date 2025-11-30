@@ -1,6 +1,5 @@
-﻿using Domain.Enum;
+﻿using Domain.Enums;
 using Domain.Models;
-using Domain.Exceptions;
 using Domain.Exceptions.Repositories;
 
 namespace Domain.Interfaces.Repository;
@@ -17,7 +16,7 @@ public interface IRelationshipRepository
     /// <exception cref="RelationshipNotFoundRepositoryException">type = null, но отношений не существует</exception>
     public Task SetRelationship(Guid id1, Guid id2, RelationshipType? type);
 
-    public Task<RelationshipType> GetPersonsRelationship(Guid id1, Guid id2);
+    public Task<RelationshipType> GetPersonsRelationship(Guid person1Id, Guid person2Id);
 
     public Task<List<Relationship>> GetPersonRelationships(Guid id);
 }
