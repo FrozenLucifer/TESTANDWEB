@@ -14,6 +14,7 @@ public class AuthE2ETests : IAsyncLifetime
 {
     private readonly HttpClient _client;
     private readonly Context _db;
+    private string _username;
 
     public AuthE2ETests()
     {
@@ -21,7 +22,7 @@ public class AuthE2ETests : IAsyncLifetime
         _client = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                               ?? "Host=postgres;Port=5432;Database=detective_test;Username=postgres;Password=1";
+                               ?? "Host=localhost;Port=5434;Database=detective_test;Username=postgres;Password=1";
 
         var options = new DbContextOptionsBuilder<Context>()
             .UseNpgsql(connectionString)
@@ -32,10 +33,9 @@ public class AuthE2ETests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var username = "test_user";
-        // var passwordHash = new PasswordHasher().HashPassword("OldPassword123!");
-        var passwordHash = "";
-        var user = new UserDb(username, passwordHash, "", UserType.Admin);
+        _username =  $"test_user{DateTime.Now.ToString()}";
+        var passwordHash = new PasswordProvider().HashPassword("OldPassword123!");
+        var user = new UserDb(_username, passwordHash, "", UserType.Admin);
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
@@ -52,7 +52,7 @@ public class AuthE2ETests : IAsyncLifetime
     [Fact]
     public async Task AuthAndChangePassword_FullFlow_WorksCorrectly()
     {
-        var username = "test_user";
+        var username = _username;
         var oldPassword = "OldPassword123!";
         var newPassword = "NewPassword456!";
 
@@ -68,7 +68,7 @@ public class AuthE2ETests : IAsyncLifetime
 
         var loginData = await correctLoginResponse.Content.ReadFromJsonAsync<LoginResponseDto>();
         loginData.Should().NotBeNull();
-        loginData!.Token.Should().NotBeNullOrWhiteSpace();
+        loginData.Token.Should().NotBeNullOrWhiteSpace();
 
         _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginData.Token);
