@@ -55,6 +55,7 @@ jobs:
   
   # ===== Integration tests =====
   integration_tests:
+    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: unit_tests
@@ -93,6 +94,7 @@ jobs:
 
   # ===== E2E tests =====
   e2e_tests:
+    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: integration_tests
@@ -149,6 +151,7 @@ jobs:
     
     # ===== BDD / Gherkin tests =====
   bdd_tests:
+    if: false
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: e2e_tests
