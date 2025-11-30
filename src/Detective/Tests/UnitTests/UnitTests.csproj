@@ -33,18 +33,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Domain\Domain.csproj" />
-      <ProjectReference Include="..\..\Logic\Logic.csproj" />
-      <ProjectReference Include="..\TestBase\TestBase.csproj" />
+        <ProjectReference Include="..\..\Domain\Domain.csproj" />
+        <ProjectReference Include="..\..\Logic\Logic.csproj" />
+        <ProjectReference Include="..\TestBase\TestBase.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <None Update="allureConfig.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="xunit.runner.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="allureConfig.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="xunit.runner.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
