@@ -1,0 +1,68 @@
+x-postgres-base: &postgres-base
+  image: postgres:15
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1
+    POSTGRES_DB: detective
+  networks:
+    - web
+  healthcheck:
+    test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+    interval: 5s
+    retries: 5
+
+x-aspnet-app-base: &aspnet-base
+  build:
+    context: ./Server
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: 1
+    POSTGRES_DB: detective
+  networks:
+    - web
+  restart: unless-stopped
+
+services:
+  postgres-master:
+    <<: *postgres-base
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+  
+  aspnet-app:
+    <<: *aspnet-base
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=detective;Username=postgres;Password=1
+    depends_on:
+      postgres-master:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5000/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+  smtp:
+    image: rnwood/smtp4dev
+    container_name: smtp4dev
+    ports:
+      - "8025:80"
+      - "2525:25"
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+
+#docker run --network detective_web -e PGPASSWORD='1' --rm -v "$(pwd)/data:/backup" postgres:15 pg_basebackup -h postgres -p 5432 -U replicator -D /backup -Fp -Xs -R -P -v 
+#docker exec -it postgres psql -U postgres -c \"SELECT client_addr, state, sent_lsn, write_lsn FROM pg_stat_replication;"
+#docker exec -it postgres psql -U postgres -c \"SELECT client_addr, state, sent_lsn, write_lsn FROM pg_stat_replication;"
