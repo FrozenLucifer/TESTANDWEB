@@ -10,7 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Allure.Xunit" Version="2.12.1" />
+        <PackageReference Include="Allure.Net.Commons" Version="2.14.1" />
+        <PackageReference Include="Allure.Xunit" Version="2.14.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="FluentAssertions" Version="8.7.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.21" />
