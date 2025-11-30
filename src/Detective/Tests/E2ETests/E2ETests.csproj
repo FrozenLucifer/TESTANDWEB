@@ -23,8 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DTOs\DTOs.csproj" />
-      <ProjectReference Include="..\Server\Server.csproj" />
+      <ProjectReference Include="..\..\DTOs\DTOs.csproj" />
+      <ProjectReference Include="..\..\Server\Server.csproj" />
     </ItemGroup>
 
 </Project>

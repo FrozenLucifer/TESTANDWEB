@@ -32,7 +32,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\Logic\Logic.csproj" />
-      <ProjectReference Include="..\..\TestBase\TestBase.csproj" />
+      <ProjectReference Include="..\TestBase\TestBase.csproj" />
     </ItemGroup>
     
     <ItemGroup>

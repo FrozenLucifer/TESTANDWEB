@@ -27,11 +27,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-      <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\DataAccess\DataAccess.csproj" />
+      <ProjectReference Include="..\..\Domain\Domain.csproj" />
       <ProjectReference Include="..\TestBase\TestBase.csproj" />
-      <ProjectReference Include="..\DTOs\DTOs.csproj" />
-      <ProjectReference Include="..\Server\Server.csproj" />
+      <ProjectReference Include="..\..\DTOs\DTOs.csproj" />
+      <ProjectReference Include="..\..\Server\Server.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -15,15 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B640AD76
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Tests\UnitTests\UnitTests.csproj", "{D821E248-C76D-4CC0-890A-D4FD977ED823}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{C22420CF-F173-4C3B-BC49-51D5CBCDA741}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "Tests\IntegrationTests\IntegrationTests.csproj", "{C22420CF-F173-4C3B-BC49-51D5CBCDA741}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePopulator", "DatabasePopulator\DatabasePopulator.csproj", "{CFAFBA28-D156-4558-8A0E-D88EEEFB42A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePopulator", "Tests\DatabasePopulator\DatabasePopulator.csproj", "{CFAFBA28-D156-4558-8A0E-D88EEEFB42A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "DTOs\DTOs.csproj", "{139305F0-0245-498F-94B8-E2664DC43CF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBase", "TestBase\TestBase.csproj", "{B6405F32-3786-4B76-858E-5369037994B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBase", "Tests\TestBase\TestBase.csproj", "{B6405F32-3786-4B76-858E-5369037994B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETests", "E2ETests\E2ETests.csproj", "{6668BD35-0214-4EC2-AECB-9D0E40C0ACF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETests", "Tests\E2ETests\E2ETests.csproj", "{6668BD35-0214-4EC2-AECB-9D0E40C0ACF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
