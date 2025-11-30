@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Tests\UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "Tests\IntegrationTests\IntegrationTests.csproj", "{C22420CF-F173-4C3B-BC49-51D5CBCDA741}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePopulator", "Tests\DatabasePopulator\DatabasePopulator.csproj", "{CFAFBA28-D156-4558-8A0E-D88EEEFB42A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePopulator", "DatabasePopulator\DatabasePopulator.csproj", "{CFAFBA28-D156-4558-8A0E-D88EEEFB42A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "DTOs\DTOs.csproj", "{139305F0-0245-498F-94B8-E2664DC43CF8}"
 EndProject
