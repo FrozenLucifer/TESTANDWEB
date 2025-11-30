@@ -21,13 +21,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     }
 }
 
-
 public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLifetime
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly IServiceScope _scope;
     private readonly Context _db;
+    private string _username;
 
     public AuthE2ETests(CustomWebApplicationFactory factory)
     {
@@ -37,37 +37,26 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
         _db = _scope.ServiceProvider.GetRequiredService<Context>();
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var username = "test_user";
-        // var passwordHash = new PasswordHasher.HashPassword("OldPassword123!");
-        var passwordHash = "";
-        var user = new UserDb(username, passwordHash, "", UserType.Admin);
+        _username = $"test_user{DateTime.Now.ToString()}";
+        var passwordHash = new PasswordProvider().HashPassword("OldPassword123!");
+        var user = new UserDb(_username, passwordHash, "", UserType.Admin);
 
         _db.Users.Add(user);
-        _db.SaveChanges();
-
-        return Task.CompletedTask;
+        await _db.SaveChangesAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
         _db.Users.RemoveRange(_db.Users);
-        _db.SaveChanges();
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-        _scope.Dispose();
-        _factory.Dispose(); // ⚠️ важно освободить фабрику!
+        await _db.SaveChangesAsync();
     }
 
     [Fact]
     public async Task AuthAndChangePassword_FullFlow_WorksCorrectly()
     {
-        var username = "test_user";
+        var username = _username;
         var oldPassword = "OldPassword123!";
         var newPassword = "NewPassword456!";
 
@@ -90,7 +79,7 @@ public class AuthE2ETests : IClassFixture<CustomWebApplicationFactory>, IAsyncLi
 
         var loginData = await correctLoginResponse.Content.ReadFromJsonAsync<LoginResponseDto>();
         loginData.Should().NotBeNull();
-        loginData!.Token.Should().NotBeNullOrWhiteSpace();
+        loginData.Token.Should().NotBeNullOrWhiteSpace();
 
         // Добавляем токен к заголовкам
         _client.DefaultRequestHeaders.Authorization =
