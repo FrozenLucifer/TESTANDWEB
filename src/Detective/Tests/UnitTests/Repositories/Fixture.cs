@@ -13,7 +13,7 @@ public class InMemoryDatabaseFixture : DatabaseFixtureBase
     public override Task InitializeAsync()
     {
         _connection = new SqliteConnection("DataSource=:memory:");
-        _connection.Open();
+        _connection.OpenAsync();
 
         var options = new DbContextOptionsBuilder<Context>()
             .UseSqlite(_connection)
@@ -21,8 +21,8 @@ public class InMemoryDatabaseFixture : DatabaseFixtureBase
             .Options;
 
         DbContext = new Context(options);
-        
-        DbContext.Database.EnsureCreated();
+
+        DbContext.Database.EnsureCreatedAsync();
 
         return Task.CompletedTask;
     }
@@ -30,7 +30,7 @@ public class InMemoryDatabaseFixture : DatabaseFixtureBase
     public override Task DisposeAsync()
     {
         DbContext.Dispose();
-        _connection.Close();
+        _connection.CloseAsync();
         _connection.Dispose();
         return Task.CompletedTask;
     }

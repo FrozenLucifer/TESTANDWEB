@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using BDDTests.Hooks;
 using DataAccess;
 using DataAccess.Models;
+using Domain.Enums;
 using Domain.Interfaces;
 using DTOs;
 using FluentAssertions;
@@ -15,6 +16,7 @@ namespace BDDTests.Steps;
 [Binding]
 public class AuthSteps : IDisposable
 {
+    private readonly IPasswordProvider _passwordProvider;
     private readonly DbContextOptions<Context> _options;
 
     private readonly RestClient _client = new("http://localhost:5000");
@@ -26,34 +28,34 @@ public class AuthSteps : IDisposable
     private string _newPassword = "";
     private string _token = "";
 
-    public AuthSteps()
+    public AuthSteps(IPasswordProvider passwordProvider)
     {
-        // _passwordProvider = passwordProvider;
-        // _options = DBHooks.DbOptions;
+        _passwordProvider = passwordProvider;
+        _options = DBHooks.DbOptions;
     }
 
     [Given(@"a technical user exists")]
     public async Task GivenATechnicalUserExists()
     {
-        // await using var ctx = new Context(_options);
-        //
-        // var existing = await ctx.Users
-        //     .FirstOrDefaultAsync(x => x.Username == _username);
-        //
-        // if (existing != null)
-        // {
-        //     ctx.Users.Remove(existing);
-        //     await ctx.SaveChangesAsync();
-        // }
-        //
-        // var user = new UserDb(
-        //     username: _username,
-        //     password: _passwordProvider.HashPassword(_password),
-        //     email: _email,
-        //     type: UserType.Employee);
-        //
-        // ctx.Users.Add(user);
-        // await ctx.SaveChangesAsync();
+        await using var ctx = new Context(_options);
+
+        var existing = await ctx.Users
+            .FirstOrDefaultAsync(x => x.Username == _username);
+
+        if (existing != null)
+        {
+            ctx.Users.Remove(existing);
+            await ctx.SaveChangesAsync();
+        }
+
+        var user = new UserDb(
+            username: _username,
+            password: _passwordProvider.HashPassword(_password),
+            email: _email,
+            type: UserType.Employee);
+
+        ctx.Users.Add(user);
+        await ctx.SaveChangesAsync();
     }
 
     [When(@"I login with correct username and password")]
@@ -116,15 +118,15 @@ public class AuthSteps : IDisposable
     [When(@"I confirm 2FA with the correct code")]
     public async Task ConfirmCorrect2Fa()
     {
-        // var req = new RestRequest("/api/v1/auth/2fa/confirm", Method.Post)
-        //     .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: _twoFaCode));
-        //
-        // var resp = await _client.ExecuteAsync(req);
-        //
-        // resp.IsSuccessful.Should().BeTrue();
-        // resp.Content.Should().NotBeEmpty();
-        //
-        // _token = resp.Content;
+        var req = new RestRequest("/api/v1/auth/2fa/confirm", Method.Post)
+            .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: _twoFaCode));
+
+        var resp = await _client.ExecuteAsync(req);
+
+        resp.IsSuccessful.Should().BeTrue();
+        resp.Content.Should().NotBeEmpty();
+
+        _token = resp.Content;
     }
 
     [When(@"I confirm 2FA with wrong code three times")]
@@ -132,10 +134,10 @@ public class AuthSteps : IDisposable
     {
         for (var i = 0; i < 3; i++)
         {
-            // var req = new RestRequest("/api/v1/auth/2fa/confirm", Method.Post)
-            //     .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: "000000"));
-            //
-            // await _client.ExecuteAsync(req);
+            var req = new RestRequest("/api/v1/auth/2fa/confirm", Method.Post)
+                .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: "000000"));
+
+            await _client.ExecuteAsync(req);
         }
     }
 
