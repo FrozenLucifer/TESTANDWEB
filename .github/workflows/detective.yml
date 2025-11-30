@@ -45,7 +45,8 @@ jobs:
       - name: Run unit tests
         run: |
           cd src/Detective
-          dotnet test Tests/UnitTests/UnitTests.csproj --no-build --logger:"allure;LogFilePath=../../build_output/allure-results"
+          dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../build_output
+          ls -R ../../build_output
 
       - name: Debug search for allure-results
         run: |
@@ -57,24 +58,6 @@ jobs:
         with:
           name: allure-results-unit
           path: build_output/allure-results
-
-#      - name: Debug list files
-#        run: |
-#          echo "ROOT:"
-#          find / -type d -name "allure-results" -print
-#          echo "--- FULL TREE ---"
-#          find . | head -n 1000
-#            - name: Debug list files
-
-#      - name: Debug list files 2
-#        run: |
-#          echo "--- FULL TREE ---"
-#          find .. | head
-
-      - name: Debug check UnitTests folder
-        run: |
-          echo "Listing UnitTests dir:"
-          ls -R src/Detective/Tests/UnitTests   
   
   # ===== Integration tests =====
   integration_tests:
@@ -107,16 +90,6 @@ jobs:
           cd src/Detective
           dotnet test Tests/IntegrationTests/IntegrationTests.csproj --no-build -o ../../build_output
 
-      - name: List directories src/Detective
-        run: |
-          cd src/Detective
-          echo "Directory tree src/Detective:"
-          tree -L 3 || ls -R
-
-      - name: List directories
-        run: |
-          echo "Directory tree:"
-          tree -L 3 || ls -R
       - name: Upload allure results
         if: always()
         uses: actions/upload-artifact@v5
