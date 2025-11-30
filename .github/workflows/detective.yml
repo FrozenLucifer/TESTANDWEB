@@ -14,7 +14,7 @@ jobs:
     container: mcr.microsoft.com/dotnet/sdk:8.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Restore dependencies
         run: |
@@ -25,7 +25,7 @@ jobs:
           dotnet build src/Detective/Detective.sln -c Release -o build_output
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build_output
           path: build_output
@@ -36,8 +36,8 @@ jobs:
     container: mcr.microsoft.com/dotnet/sdk:8.0
     needs: build
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -48,7 +48,7 @@ jobs:
           dotnet test Tests/UnitTests/UnitTests.csproj --no-build -o ../../build_output
 
       - name: Upload allure results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-unit
           path: build_output/allure-results
@@ -57,7 +57,9 @@ jobs:
   integration_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: unit_tests
+    needs: build
+    env:
+      POSTGRES_HOST: postgres
     services:
       postgres:
         image: postgres:16
@@ -65,13 +67,14 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1
           POSTGRES_DB: detective_test
+          POSTGRES_MAX_CONNECTIONS: 200
         ports:
           - 5432:5432
         options: --pull always
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -83,7 +86,7 @@ jobs:
 
       - name: Upload allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-integration
           path: build_output/allure-results
@@ -92,7 +95,7 @@ jobs:
   e2e_tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
-    needs: integration_tests
+    needs: build
     services:
       postgres:
         image: postgres:16
@@ -108,8 +111,8 @@ jobs:
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=postgres;Password=1;Database=detective_test
       ASPNETCORE_ENVIRONMENT: Test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
         with:
           name: build_output
           path: build_output
@@ -117,25 +120,19 @@ jobs:
       - name: Start web app (Kestrel) in background
         run: |
           cd src/Detective/Server
-          # Запускаем приложение в фоне, привязав к 0.0.0.0:5000
-          # Убедитесь, что правильный проект запускается (замените путь к проекту, если нужно)
           dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
           echo "Waiting for web app to be ready..."
-          for i in {1..30}; do
-            if curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; then
-              echo "Server is up"
-              break
-            fi
-            echo "Waiting... ($i)"  
+          until curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; do
+            echo -n "."
             sleep 2
           done
-          sleep 10
+          echo "Server is up"
 
       - name: Run E2E tests against real server
         run: |
           cd src/Detective
-          TEST_BASE_URL=http://localhost:5000 dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
-          
+          dotnet test Tests/E2ETests/E2ETests.csproj --no-build -o ../../build_output
+
       - name: Print server logs
         if: always()
         run: |
@@ -145,14 +142,80 @@ jobs:
 
       - name: Upload allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-results-e2e
           path: build_output/allure-results
     
+    # ===== BDD / Gherkin tests =====
+  bdd_tests:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/dotnet/sdk:8.0
+    needs: build
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1
+          POSTGRES_DB: detective_test
+        ports:
+          - 5432:5432
+        options: --pull always
+      smtp4dev:
+        image: rnwood/smtp4dev:latest
+        ports:
+          - 8025:80
+          - 5025:25
+        options: --pull always
+    env:
+      TEST_BASE_URL: http://localhost:5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Username=postgres;Password=1;Database=detective_test
+      SMTP_HOST: smtp4dev
+      SMTP_PORT: 25
+      SMTP_UI: http://smtp4dev:80
+      ASPNETCORE_ENVIRONMENT: Test
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
+        with:
+          name: build_output
+          path: build_output
+
+      - name: Start web app (Kestrel) in background
+        run: |
+          cd src/Detective/Server
+          dotnet run --project ./Server.csproj --urls "http://0.0.0.0:5000" > server.log 2>&1 &
+          echo "Waiting for web app to be ready..."
+          until curl -sSf http://localhost:5000/health >/dev/null 2>&1 || curl -sSf http://localhost:5000/swagger >/dev/null 2>&1; do
+            echo -n "."
+            sleep 2
+          done
+          echo "Server is up"
+
+      - name: Run BDD / SpecFlow tests
+        run: |
+          cd src/Detective
+          dotnet test Tests/BDDTests/BDDTests.csproj --no-build -o ../../build_output
+
+      - name: Print server logs
+        if: always()
+        run: |
+          echo "========= SERVER LOGS ========="
+          cat src/Detective/Server/server.log || echo "Нет логов (файл отсутствует)"
+          echo "==============================="
+
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure-results-bdd
+          path: build_output/allure-results
+    
+    
     # ===== Allure Report =====
   allure_report:
-    needs: [ unit_tests, integration_tests, e2e_tests ]
+    needs: [ unit_tests, integration_tests, e2e_tests, bdd_tests ]
     if: always()
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:8.0
@@ -161,11 +224,11 @@ jobs:
       RUN_DIR: build_output/allure-results
       ALLURE_REPORT_DIR: allure-report
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       # ---------- Load test report history ----------
       - name: Load test report history
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         if: always()
         continue-on-error: true
         with:
@@ -175,26 +238,32 @@ jobs:
       
       # ---------- Download test results ----------
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-unit
           path: build_output/allure-results
-          
+
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-integration
           path: build_output/allure-results
-          
+
       - name: Download allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: allure-results-e2e
+          path: build_output/allure-results
+
+      - name: Download allure results
+        uses: actions/download-artifact@v6
+        with:
+          name: allure-results-bdd
           path: build_output/allure-results
       
       # ---------- Build Allure Report ----------
       - name: Build Allure Report
-        uses: simple-elf/allure-report-action@v1.7
+        uses: simple-elf/allure-report-action@master
         if: always()
         with:
           gh_pages: ${{ env.ALLURE_HISTORY }}
@@ -203,7 +272,7 @@ jobs:
       
       # ---------- Publish Allure Report ----------
       - name: Publish Allure Report
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
