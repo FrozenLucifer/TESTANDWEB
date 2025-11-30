@@ -46,12 +46,7 @@ jobs:
         run: |
           cd src/Detective
           dotnet test UnitTests/UnitTests.csproj --no-build -o ../../build_output
-          ls -R ../../build_output
-
-      - name: Debug search for allure-results
-        run: |
-          echo "Searching for allure-results..."
-          find . -type d -name "allure-results" -print
+          find . -type d -name "allure-results"
 
       - name: Upload allure results
         uses: actions/upload-artifact@v5
