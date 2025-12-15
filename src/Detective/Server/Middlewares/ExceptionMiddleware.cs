@@ -30,6 +30,7 @@ public class ExceptionMiddleware
         }
     }
 
+#pragma warning disable CA1502
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
@@ -75,6 +76,7 @@ public class ExceptionMiddleware
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse)).ConfigureAwait(true);
     }
+#pragma warning restore CA1502
 }
 
 public class ErrorResponse
