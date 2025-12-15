@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DTOs.Enum;
+namespace DTOs.Enums;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserTypeDto

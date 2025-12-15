@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DTOs.Enum;
+namespace DTOs.Enums;
 
 public enum ContactTypeDto
 {
