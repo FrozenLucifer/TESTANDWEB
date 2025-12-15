@@ -7,13 +7,13 @@ public class CharacteristicDb(Guid id,
     string personality,
     string medicalConditions)
 {
-    public Guid Id = id;
-    public Guid PersonId = personId;
-    public string AuthorUsername = authorUsername;
+    public Guid Id { get; set; }= id;
+    public Guid PersonId { get; set; }= personId;
+    public string AuthorUsername { get; set; }= authorUsername;
 
-    public string Appearance = appearance;
-    public string Personality = personality;
-    public string MedicalConditions = medicalConditions;
+    public string Appearance { get; set; }= appearance;
+    public string Personality { get; set; }= personality;
+    public string MedicalConditions { get; set; }= medicalConditions;
 
     public virtual PersonDb Person { get; set; }
     public virtual UserDb Author { get; set; }

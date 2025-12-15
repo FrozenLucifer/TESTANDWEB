@@ -1,7 +1,7 @@
 ﻿using Domain.Enums;
 using Domain.Models;
 using DTOs;
-using DTOs.Enum;
+using DTOs.Enums;
 
 namespace Detective.Dtos.Converters;
 

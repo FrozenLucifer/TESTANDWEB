@@ -1,4 +1,4 @@
-﻿using DTOs.Enum;
+﻿using DTOs.Enums;
 
 namespace DTOs;
 
@@ -11,7 +11,7 @@ public class CreateCharacteristicDto
 
 public class ConnectPersonsDto
 {
-    public Guid person1Id { get; set; }
+    public Guid Person1Id { get; set; }
     public Guid person2Id { get; set; }
     public RelationshipTypeDto type { get; set; }
 }
@@ -24,18 +24,18 @@ public class DeleteRelationshipDto
 
 public class AddPersonContactDto
 {
-    public ContactTypeDto type { get; set; }
-    public string info { get; set; }
+    public ContactTypeDto Type { get; set; }
+    public string Info { get; set; }
 }
 
 public class AddPersonPropertyDto
 {
-    public string name { get; set; }
-    public int? cost { get; set; }
+    public string Name { get; set; }
+    public int? Cost { get; set; }
 }
 
 public class CreateUserDto
 {
-    public string username { get; set; }
-    public UserTypeDto type { get; set; }
+    public string Username { get; set; }
+    public UserTypeDto Type { get; set; }
 }

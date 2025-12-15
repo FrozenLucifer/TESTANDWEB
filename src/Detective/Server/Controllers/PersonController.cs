@@ -37,7 +37,7 @@ public class PersonController : ControllerBase
     [Authorize(Policy = Policies.Read)]
     public async Task<ActionResult<List<PersonDto>>> GetPersons([FromQuery] GetPersonFilterDto filter)
     {
-        if (filter.ContactType != null)
+        if (filter.ContactType is not null && filter.ContactInfo is not null)
         {
             var result = await _personService.GetPersonByContact(filter.ContactType.Value.ToDomain(), filter.ContactInfo);
             var x = new List<Person> { result };
@@ -150,7 +150,7 @@ public class PersonController : ControllerBase
     [Authorize(Policy = Policies.Edit)]
     public async Task<ActionResult> ConnectPersons(ConnectPersonsDto connect)
     {
-        await _personService.SetPersonsRelationship(connect.person1Id, connect.person2Id, connect.type.ToDomain());
+        await _personService.SetPersonsRelationship(connect.Person1Id, connect.person2Id, connect.type.ToDomain());
         return NoContent();
     }
 
@@ -183,7 +183,7 @@ public class PersonController : ControllerBase
     [Authorize(Policy = Policies.Edit)]
     public async Task<ActionResult> AddPersonContact([FromRoute][Required] Guid personId, AddPersonContactDto addPersonContactDto)
     {
-        await _personService.AddPersonContact(personId, addPersonContactDto.type.ToDomain(), addPersonContactDto.info);
+        await _personService.AddPersonContact(personId, addPersonContactDto.Type.ToDomain(), addPersonContactDto.Info);
         return NoContent();
     }
 
@@ -250,7 +250,7 @@ public class PersonController : ControllerBase
     [Authorize(Policy = Policies.Edit)]
     public async Task<ActionResult> AddPersonProperty([Required] Guid personId, [Required] AddPersonPropertyDto addPersonPropertyDto)
     {
-        await _personService.AddPersonProperty(personId, addPersonPropertyDto.name, addPersonPropertyDto.cost);
+        await _personService.AddPersonProperty(personId, addPersonPropertyDto.Name, addPersonPropertyDto.Cost);
         return NoContent();
     }
 

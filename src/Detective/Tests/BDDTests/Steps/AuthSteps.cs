@@ -16,6 +16,8 @@ namespace BDDTests.Steps;
 [Binding]
 public class AuthSteps : IDisposable
 {
+    private readonly ScenarioContext _scenarioContext;
+    private readonly IReqnrollOutputHelper _output;
     private readonly IPasswordProvider _passwordProvider;
     private readonly DbContextOptions<Context> _options;
 
@@ -24,14 +26,15 @@ public class AuthSteps : IDisposable
     private readonly string _username = "test_user";
     private readonly string _password = "Test123!";
     private readonly string _email = "test@local";
-    private string _twoFaCode = "";
     private string _newPassword = "";
     private string _token = "";
 
-    public AuthSteps(IPasswordProvider passwordProvider)
+    public AuthSteps(ScenarioContext scenarioContext, IReqnrollOutputHelper output, IPasswordProvider passwordProvider)
     {
+        _scenarioContext = scenarioContext;
         _passwordProvider = passwordProvider;
         _options = DBHooks.DbOptions;
+        _output = output;
     }
 
     [Given(@"a technical user exists")]
@@ -73,9 +76,6 @@ public class AuthSteps : IDisposable
     [Then(@"a 2FA code is sent to my email")]
     public async Task Read2FaEmail()
     {
-        //
-        // 1. Получаем список писем
-        //
         var listResp = await _mailClient.ExecuteAsync(new RestRequest("/api/messages"));
         listResp.IsSuccessful.Should().BeTrue();
         listResp.Content.Should().NotBeEmpty();
@@ -84,9 +84,6 @@ public class AuthSteps : IDisposable
         var results = jsonDoc.RootElement.GetProperty("results");
         results.GetArrayLength().Should().BeGreaterThan(0);
 
-        //
-        // 2. Берём последнее письмо по дате
-        //
         var last = results.EnumerateArray()
             .OrderByDescending(x =>
                 x.GetProperty("receivedDate").GetDateTime())
@@ -94,32 +91,27 @@ public class AuthSteps : IDisposable
 
         var id = last.GetProperty("id").GetString();
 
-        //
-        // 3. Получаем текст письма напрямую
-        //
         var messageResp = await _mailClient.ExecuteAsync(
             new RestRequest($"/api/messages/{id}/plaintext")
         );
 
         messageResp.IsSuccessful.Should().BeTrue();
         messageResp.Content.Should().NotBeEmpty();
-        
+
         var body = messageResp.Content;
 
-        //
-        // 4. Ищем код (6 цифр)
-        //
         var match = Regex.Match(body, @"\b(\d{6})\b");
         match.Success.Should().BeTrue();
 
-        _twoFaCode = match.Groups[1].Value;
+        _scenarioContext["Code"] = match.Groups[1].Value;
+        _output.WriteLine($"Code: {match.Groups[1].Value}");
     }
 
     [When(@"I confirm 2FA with the correct code")]
     public async Task ConfirmCorrect2Fa()
     {
         var req = new RestRequest("/api/v1/auth/2fa/confirm", Method.Post)
-            .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: _twoFaCode));
+            .AddJsonBody(new TwoFactorConfirmRequestDto(Username: _username, Code: (string)_scenarioContext["Code"]));
 
         var resp = await _client.ExecuteAsync(req);
 
@@ -144,20 +136,14 @@ public class AuthSteps : IDisposable
     [Then(@"my password is automatically changed")]
     public async Task CheckEmailForNewPassword()
     {
-        //
-        // 1. Получаем список писем
-        //
         var listResp = await _mailClient.ExecuteAsync(new RestRequest("/api/messages"));
         listResp.IsSuccessful.Should().BeTrue();
         listResp.Content.Should().NotBeEmpty();
-        
+
         using var jsonDoc = JsonDocument.Parse(listResp.Content);
         var results = jsonDoc.RootElement.GetProperty("results");
         results.GetArrayLength().Should().BeGreaterThan(0);
 
-        //
-        // 2. Находим последнее письмо (должно содержать новый пароль)
-        //
         var last = results.EnumerateArray()
             .OrderByDescending(x =>
                 x.GetProperty("receivedDate").GetDateTime())
@@ -165,9 +151,6 @@ public class AuthSteps : IDisposable
 
         var id = last.GetProperty("id").GetString();
 
-        //
-        // 3. Получаем текст письма
-        //
         var messageResp = await _mailClient.ExecuteAsync(
             new RestRequest($"/api/messages/{id}/plaintext")
         );
@@ -177,13 +160,9 @@ public class AuthSteps : IDisposable
         messageResp.Content.Should().NotBeEmpty();
         var body = messageResp.Content;
 
-        //
-        // 4. Извлекаем новый пароль
-        //
-        
         var match = Regex.Match(body, @"пароль:\s*(\S+)");
         match.Success.Should().BeTrue();
-        
+
         _newPassword = match.Groups[1].Value.Trim('"');
     }
 

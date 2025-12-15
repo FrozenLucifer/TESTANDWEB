@@ -3,8 +3,6 @@ using DataAccess.Repository;
 using Domain.Exceptions.Repositories;
 using Domain.Interfaces.Repository;
 using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace TestBase.Repositories;
 
@@ -110,12 +108,3 @@ public class PropertyRepositoryTests<TFixture>
             _propertyRepository.DeleteProperty(propertyId));
     }
 }
-
-// public class RandomOrderer : ITestCaseOrderer
-// {
-//     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
-//         where TTestCase : ITestCase
-//     {
-//         return testCases.OrderBy(tc => Guid.NewGuid());
-//     }
-// }

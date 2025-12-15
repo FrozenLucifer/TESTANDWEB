@@ -1,5 +1,4 @@
 ﻿using DataAccess;
-using DataAccess.Models;
 using DataAccess.Repository;
 using Domain.Enums;
 using Domain.Exceptions.Repositories;

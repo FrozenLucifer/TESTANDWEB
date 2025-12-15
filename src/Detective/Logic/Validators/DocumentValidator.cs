@@ -26,7 +26,7 @@ public class DocumentValidator : AbstractValidator<(DocumentType type, string pa
                             .Must(BeValidPassportJson)
                             .WithMessage(x =>
                             {
-                                var (isValid, errors) = ValidatePassportPayload(x.payload);
+                                var (_, errors) = ValidatePassportPayload(x.payload);
                                 return $"Неверная структура данных паспорта. {string.Join(" ", errors)}";
                             });
                     });

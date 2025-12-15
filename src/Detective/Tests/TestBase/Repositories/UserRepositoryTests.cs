@@ -3,7 +3,6 @@ using DataAccess.Models;
 using DataAccess.Repository;
 using Domain.Enums;
 using Domain.Exceptions.Repositories;
-using Domain.Interfaces.Repository;
 using Xunit;
 
 namespace TestBase.Repositories;
@@ -12,7 +11,7 @@ public class UserRepositoryTests<TFixture>
     where TFixture : DatabaseFixtureBase, new()
 {
     private readonly Context _dbContext;
-    private readonly IUserRepository _userRepository;
+    private readonly UserRepository _userRepository;
 
     public UserRepositoryTests()
     {
@@ -102,26 +101,26 @@ public class UserRepositoryTests<TFixture>
             _userRepository.DeleteUser("nonexistent"));
     }
 
-    // [Fact]
-    // public async Task GetUsers_ShouldReturnAllUsers()
-    // {
-    //     var user1 = new UserBuilder()
-    //         .WithUsername("user5")
-    //         .Build();
-    //
-    //     var user2 = new UserBuilder()
-    //         .WithUsername("user6")
-    //         .Build();
-    //     
-    //     _dbContext.Users.Add(user1);
-    //     _dbContext.Users.Add(user2);
-    //     await _dbContext.SaveChangesAsync();
-    //
-    //     var users = await _userRepository.GetUsers();
-    //     Assert.Contains(users, u => u.Username == user1.Username);
-    //     Assert.Contains(users, u => u.Username == user2.Username);
-    //     Assert.Equal(2, users.Count);
-    // }
+    [Fact]
+    public async Task GetUsers_ShouldReturnAllUsers()
+    {
+        var user1 = new UserBuilder()
+            .WithUsername("user5")
+            .Build();
+    
+        var user2 = new UserBuilder()
+            .WithUsername("user6")
+            .Build();
+        
+        _dbContext.Users.Add(user1);
+        _dbContext.Users.Add(user2);
+        await _dbContext.SaveChangesAsync();
+    
+        var users = await _userRepository.GetUsers();
+        Assert.Contains(users, u => u.Username == user1.Username);
+        Assert.Contains(users, u => u.Username == user2.Username);
+        Assert.Equal(2, users.Count);
+    }
 }
 
 public class UserBuilder
@@ -150,7 +149,7 @@ public class UserBuilder
 
     public UserDb Build()
     {
-        var user = new UserDb(username: _username, password: _password, type: _type, email: "");
+        var user = new UserDb(username: _username, password: _password, type: _type, email: $"{_username}@test.tmp");
 
         return user;
     }

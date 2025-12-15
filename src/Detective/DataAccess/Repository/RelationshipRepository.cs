@@ -17,25 +17,25 @@ public class RelationshipRepository : IRelationshipRepository
         _context = context;
     }
 
-    public async Task SetRelationship(Guid id1, Guid id2, RelationshipType? type)
+    public async Task SetRelationship(Guid person1Id, Guid person2Id, RelationshipType? type)
     {
         if (type is null)
         {
-            var relationshipDb1 = await _context.Relationships.FindAsync(id1, id2);
+            var relationshipDb1 = await _context.Relationships.FindAsync(person1Id, person2Id);
             if (relationshipDb1 is null)
-                throw new RelationshipNotFoundRepositoryException(id1, id2);
+                throw new RelationshipNotFoundRepositoryException(person1Id, person2Id);
 
-            var relationshipDb2 = await _context.Relationships.FindAsync(id2, id1);
+            var relationshipDb2 = await _context.Relationships.FindAsync(person2Id, person1Id);
             if (relationshipDb2 is null)
-                throw new RelationshipNotFoundRepositoryException(id2:id1, id1:id2);
+                throw new RelationshipNotFoundRepositoryException(person2Id, person1Id);
 
             _context.Relationships.Remove(relationshipDb1);
             _context.Relationships.Remove(relationshipDb2);
         }
         else
         {
-            var existing1 = await _context.Relationships.FindAsync(id1, id2);
-            var existing2 = await _context.Relationships.FindAsync(id2, id1);
+            var existing1 = await _context.Relationships.FindAsync(person1Id, person2Id);
+            var existing2 = await _context.Relationships.FindAsync(person2Id, person1Id);
 
             if (existing1 != null && existing2 != null)
             {
@@ -44,8 +44,8 @@ public class RelationshipRepository : IRelationshipRepository
             }
             else
             {
-                var relationshipDb1 = new RelationshipDb(id1, id2, type.Value);
-                var relationshipDb2 = new RelationshipDb(id2, id1, RelationshipHelper.GetInverseRelationship(type.Value));
+                var relationshipDb1 = new RelationshipDb(person1Id, person2Id, type.Value);
+                var relationshipDb2 = new RelationshipDb(person2Id, person1Id, RelationshipHelper.GetInverseRelationship(type.Value));
                 _context.Relationships.Add(relationshipDb1);
                 _context.Relationships.Add(relationshipDb2);
             }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using DTOs.Enum;
+using DTOs.Enums;
 
 namespace DTOs;
 

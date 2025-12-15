@@ -1,8 +1,6 @@
 ﻿using Domain.Interfaces;
 using Logic;
 using Microsoft.Extensions.DependencyInjection;
-using Reqnroll;
-using Reqnroll.BoDi;
 using Reqnroll.Microsoft.Extensions.DependencyInjection;
 
 namespace BDDTests.Hooks;

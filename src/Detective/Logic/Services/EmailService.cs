@@ -17,7 +17,7 @@ public class EmailService : IEmailService
 
     public async Task SendAsync(string to, string subject, string body)
     {
-        var message = new MimeMessage();
+        using var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Detective API", _emailOptions.Email));
         message.To.Add(MailboxAddress.Parse(to));
         message.Subject = subject;

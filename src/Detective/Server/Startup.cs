@@ -57,7 +57,19 @@ public class Startup
 
             services.AddContext(Configuration.GetConnectionString("DefaultConnection"));
             services.AddScopedRepositories();
-            services.ApplyMigrations();
+            
+            var readOnlyEnv = Environment.GetEnvironmentVariable("ASPNETCORE_READONLY");
+            bool isReadOnly = !string.IsNullOrEmpty(readOnlyEnv) && readOnlyEnv.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            if (!isReadOnly)
+            {
+                Log.Information("Applying migrations...");
+                services.ApplyMigrations();
+            }
+            else
+            {
+                Log.Information("ASPNETCORE_READONLY is true. Skipping migrations.");
+            }
 
             services.AddScoped<IPasswordProvider, PasswordProvider>();
 

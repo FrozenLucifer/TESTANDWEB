@@ -42,12 +42,14 @@ class Program
             var username = userType.ToString();
             var passwordHash = hasher.HashPassword(username);
             string email;
+
             if (userType == UserType.Admin)
             {
                 email = "andrey.12.56.34@gmail.com";
             }
             else
                 email = username + "@test.com";
+
             var user = new UserDb(username, passwordHash, email, userType);
             await context.Users.AddAsync(user);
         }

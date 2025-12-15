@@ -1,5 +1,4 @@
 ﻿Feature: Authentication with 2FA
-End-to-end авторизация через логин/пароль, 2FA, блокировку и восстановление.
 
     Scenario: Successful login via 2FA
         Given a technical user exists

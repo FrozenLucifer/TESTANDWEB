@@ -1,4 +1,4 @@
-﻿using DTOs.Enum;
+﻿using DTOs.Enums;
 
 namespace DTOs;
 

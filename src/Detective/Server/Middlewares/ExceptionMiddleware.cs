@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Domain.Exceptions.Services;
 using Domain.Exceptions.Services.Auth;
 using FluentValidation;

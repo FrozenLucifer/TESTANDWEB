@@ -9,12 +9,12 @@ public interface IRelationshipRepository
     /// <summary>
     /// Устанавливает отношения между людьми. Если отношения уже существуют, обновляет их. Если type = null, удаляет существующие отношения.
     /// </summary>
-    /// <param name="id1"></param>
-    /// <param name="id2"></param>
+    /// <param name="person1Id"></param>
+    /// <param name="person2Id"></param>
     /// <param name="type"></param>
     /// <exception cref="PersonNotFoundRepositoryException">Одного или обоих людей не существует.</exception>
     /// <exception cref="RelationshipNotFoundRepositoryException">type = null, но отношений не существует</exception>
-    public Task SetRelationship(Guid id1, Guid id2, RelationshipType? type);
+    public Task SetRelationship(Guid person1Id, Guid person2Id, RelationshipType? type);
 
     public Task<RelationshipType> GetPersonsRelationship(Guid person1Id, Guid person2Id);
 

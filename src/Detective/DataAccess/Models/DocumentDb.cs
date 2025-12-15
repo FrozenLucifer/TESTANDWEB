@@ -7,10 +7,10 @@ public class DocumentDb(Guid id,
     DocumentType type,
     string payload)
 {
-    public Guid Id = id;
-    public Guid PersonId = personId;
-    public DocumentType Type = type;
-    public string Payload = payload;
+    public Guid Id { get; set; } = id;
+    public Guid PersonId { get; set; } = personId;
+    public DocumentType Type { get; set; } = type;
+    public string Payload { get; set; } = payload;
 
     public virtual PersonDb Person { get; set; }
 }
